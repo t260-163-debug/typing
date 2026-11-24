@@ -1,0 +1,2785 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>タイピング モンスター | 小学3年生向けタイピングRPG</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Rounded M PLUS 1c -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* Standard 16:9 Landscape Aspect Ratio Container */
+    .game-ultrawide-wrapper {
+      width: min(98vw, calc(98vh * (16 / 9)));
+      height: min(98vh, calc(98vw * (9 / 16)));
+      aspect-ratio: 16 / 9;
+    }
+
+    /* Keyframe Visual FX */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(2deg); }
+    }
+
+    @keyframes shakeError {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    @keyframes hitFlash {
+      0% { filter: brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0)); }
+      50% { filter: brightness(2.5) drop-shadow(0 0 20px rgba(239, 68, 68, 1)); }
+      100% { filter: brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0)); }
+    }
+
+    @keyframes monsterBigDamage {
+      0% { transform: translate(0, 0) scale(1) rotate(0deg); filter: brightness(1); }
+      15% { transform: translate(-14px, -8px) scale(0.86) rotate(-10deg); filter: brightness(3) drop-shadow(0 0 24px #ef4444); }
+      35% { transform: translate(12px, 4px) scale(1.08) rotate(8deg); filter: brightness(2.2) drop-shadow(0 0 18px #f59e0b); }
+      55% { transform: translate(-8px, -3px) scale(0.95) rotate(-5deg); filter: brightness(1.6); }
+      75% { transform: translate(5px, 2px) scale(1.02) rotate(3deg); }
+      100% { transform: translate(0, 0) scale(1) rotate(0deg); filter: brightness(1); }
+    }
+
+    @keyframes monsterMiniHit {
+      0% { transform: translate(0, 0) scale(1); filter: brightness(1); }
+      40% { transform: translate(-5px, -2px) scale(0.94) rotate(-3deg); filter: brightness(1.85) drop-shadow(0 0 10px #fbbf24); }
+      100% { transform: translate(0, 0) scale(1); filter: brightness(1); }
+    }
+
+    @keyframes slashSweep {
+      0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+      25% { transform: scale(1.15) rotate(0deg); opacity: 1; }
+      70% { transform: scale(1.25) rotate(4deg); opacity: 0.9; }
+      100% { transform: scale(1.4) rotate(8deg); opacity: 0; }
+    }
+
+    @keyframes shockwaveExpand {
+      0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.95; }
+      100% { transform: translate(-50%, -50%) scale(2.3); opacity: 0; }
+    }
+
+    @keyframes damageNumBurst {
+      0% { transform: translate(-50%, 10px) scale(0.4); opacity: 0; }
+      20% { transform: translate(-50%, -12px) scale(1.35); opacity: 1; }
+      50% { transform: translate(-50%, -26px) scale(1.05); opacity: 1; }
+      100% { transform: translate(-50%, -44px) scale(0.95); opacity: 0; }
+    }
+
+    @keyframes screenShakeImpact {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-5px, 4px); }
+      40% { transform: translate(5px, -4px); }
+      60% { transform: translate(-4px, -2px); }
+      80% { transform: translate(3px, 3px); }
+    }
+
+    @keyframes energyOrbFly {
+      0% { transform: translate(0, 0) scale(1.1); opacity: 1; }
+      80% { transform: translate(-220px, 10px) scale(0.85); opacity: 0.95; }
+      100% { transform: translate(-270px, 15px) scale(1.6); opacity: 0; }
+    }
+
+    @keyframes monsterSmirkJump {
+      0% { transform: translateY(0) rotate(0deg) scale(1); }
+      20% { transform: translateY(-12px) rotate(-7deg) scale(1.08); }
+      40% { transform: translateY(0) rotate(6deg) scale(0.96); }
+      60% { transform: translateY(-9px) rotate(-5deg) scale(1.06); }
+      80% { transform: translateY(0) rotate(4deg) scale(0.98); }
+      100% { transform: translateY(0) rotate(0deg) scale(1); }
+    }
+
+    @keyframes monsterTauntMedium {
+      0% { transform: translateY(0) rotate(0deg) scale(1); }
+      18% { transform: translateY(-18px) rotate(-11deg) scale(1.16); filter: drop-shadow(0 0 12px #f472b6); }
+      36% { transform: translateY(2px) rotate(10deg) scale(1.05); }
+      54% { transform: translateY(-15px) rotate(-9deg) scale(1.15); filter: drop-shadow(0 0 14px #f472b6); }
+      72% { transform: translateY(0) rotate(7deg) scale(1.04); }
+      100% { transform: translateY(0) rotate(0deg) scale(1); }
+    }
+
+    @keyframes monsterTauntMega {
+      0% { transform: translateY(0) rotate(0deg) scale(1); }
+      15% { transform: translateY(-24px) rotate(-14deg) scale(1.24); filter: brightness(1.18) drop-shadow(0 0 20px #e879f9); }
+      30% { transform: translateY(3px) rotate(13deg) scale(1.12); }
+      45% { transform: translateY(-22px) rotate(-12deg) scale(1.22); filter: brightness(1.22) drop-shadow(0 0 22px #fbbf24); }
+      60% { transform: translateY(2px) rotate(11deg) scale(1.12); }
+      75% { transform: translateY(-16px) rotate(-8deg) scale(1.16); }
+      90% { transform: translateY(0) rotate(5deg) scale(1.05); }
+      100% { transform: translateY(0) rotate(0deg) scale(1); }
+    }
+
+    @keyframes smirkBubbleFloat {
+      0% { transform: translate(-50%, 6px) scale(0.5); opacity: 0; }
+      25% { transform: translate(-50%, -6px) scale(1.12); opacity: 1; }
+      75% { transform: translate(-50%, -14px) scale(1); opacity: 1; }
+      100% { transform: translate(-50%, -24px) scale(0.9); opacity: 0; }
+    }
+
+    @keyframes megaBubblePop {
+      0% { transform: translate(-50%, 10px) scale(0.3) rotate(-6deg); opacity: 0; }
+      20% { transform: translate(-50%, -8px) scale(1.22) rotate(4deg); opacity: 1; }
+      35% { transform: translate(-50%, -10px) scale(1.1) rotate(-3deg); opacity: 1; }
+      80% { transform: translate(-50%, -18px) scale(1.12) rotate(2deg); opacity: 1; }
+      100% { transform: translate(-50%, -30px) scale(0.92) rotate(0deg); opacity: 0; }
+    }
+
+    @keyframes popText {
+      0% { transform: scale(0.5) translateY(0); opacity: 1; }
+      50% { transform: scale(1.3) translateY(-18px); opacity: 1; }
+      100% { transform: scale(1) translateY(-30px); opacity: 0; }
+    }
+
+    @keyframes keyPulse {
+      0%, 100% { box-shadow: 0 0 6px #f59e0b, 0 0 12px #f59e0b; transform: scale(1.06); }
+      50% { box-shadow: 0 0 16px #f59e0b, 0 0 22px #fbbf24; transform: scale(1.12); }
+    }
+
+    @keyframes levelUpGlow {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .animate-float { animation: floatSlow 3s ease-in-out infinite; }
+    .animate-shake { animation: shakeError 0.3s ease-in-out; }
+    .animate-hit { animation: hitFlash 0.25s ease-out; }
+    .animate-monster-big-damage { animation: monsterBigDamage 0.48s cubic-bezier(0.22, 1, 0.36, 1); }
+    .animate-monster-mini-hit { animation: monsterMiniHit 0.16s ease-out; }
+    .animate-slash { animation: slashSweep 0.42s ease-out forwards; }
+    .animate-shockwave { animation: shockwaveExpand 0.48s ease-out forwards; }
+    .animate-damage-burst { animation: damageNumBurst 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-screen-shake { animation: screenShakeImpact 0.28s ease-out; }
+    .animate-energy-orb { animation: energyOrbFly 0.22s ease-in forwards; }
+    .animate-monster-smirk { animation: monsterSmirkJump 0.65s ease-in-out; }
+    .animate-monster-taunt-medium { animation: monsterTauntMedium 0.85s ease-in-out; }
+    .animate-monster-taunt-mega { animation: monsterTauntMega 1.1s ease-in-out; }
+    .animate-smirk-bubble { animation: smirkBubbleFloat 0.85s ease-out forwards; }
+    .animate-mega-bubble { animation: megaBubblePop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    .animate-levelup { animation: levelUpGlow 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+    .animate-key-target {
+      animation: keyPulse 1.0s ease-in-out infinite;
+      background-color: #fbbf24 !important;
+      color: #78350f !important;
+      font-weight: 900;
+      border-color: #f59e0b !important;
+    }
+
+    .damage-pop { animation: popText 0.75s ease-out forwards; }
+
+    .glass-card {
+      background: rgba(23, 37, 84, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(147, 197, 253, 0.28);
+    }
+  </style>
+</head>
+<body class="bg-blue-950 text-white min-h-screen flex items-center justify-center p-1.5 overflow-hidden select-none">
+
+  <!-- Main Game Frame (16:9 Aspect Ratio Container) -->
+  <div class="game-ultrawide-wrapper relative rounded-2xl overflow-hidden shadow-2xl border-2 border-emerald-400/45 bg-gradient-to-br from-blue-950 via-indigo-950 to-emerald-950 flex flex-col justify-between">
+    
+    <!-- Background Grid Pattern -->
+    <div class="absolute inset-0 pointer-events-none opacity-25 bg-[radial-gradient(#34d399_1px,transparent_1px)] [background-size:18px_18px]"></div>
+
+    <!-- HEADER BAR -->
+    <div class="relative z-10 px-3 py-1 flex items-center justify-between gap-3 border-b border-indigo-300/20 bg-blue-950/90 backdrop-blur-md text-xs">
+      
+      <!-- Audio & How To Play & Reset Progress -->
+      <div class="flex items-center gap-2">
+        <button id="soundToggleBtn" onclick="game.toggleSound()" class="px-2.5 py-0.5 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-amber-300 border border-indigo-400/30 transition active:scale-95 flex items-center gap-1 font-bold text-[11px]" title="音のオン/オフ">
+          <svg id="soundOnIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M6.5 8.5H4a1 1 0 00-1 1v5a1 1 0 001 1h2.5l4.5 4.5V4.5L6.5 8.5z"/></svg>
+          <svg id="soundOffIcon" class="w-3.5 h-3.5 hidden text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+          <span>サウンド</span>
+        </button>
+        <button onclick="game.toggleInstructionsModal()" class="px-2 py-0.5 rounded-lg bg-indigo-900/60 hover:bg-indigo-800 text-indigo-200 border border-indigo-400/30 text-[11px] font-bold transition" title="あそびかた">
+          📖
+        </button>
+        <button onclick="game.openResetModal()" class="px-2 py-0.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 text-rose-300 border border-rose-500/20 text-[11px] transition" title="リセット">
+          🔄
+        </button>
+      </div>
+
+      <!-- Player Header Badge (Level & EXP) -->
+      <div class="flex items-center gap-2 bg-indigo-950/90 px-3 py-0.5 rounded-full border border-amber-400/40">
+        <span class="text-amber-300 font-black text-xs flex items-center gap-1">
+          👑 Lv.<span id="hdrPlayerLevel">1</span>
+        </span>
+        <div class="w-24 bg-blue-900 h-2 rounded-full overflow-hidden border border-indigo-300/20">
+          <div id="hdrExpBar" class="h-full bg-gradient-to-r from-amber-400 to-yellow-300 w-0 transition-all duration-300"></div>
+        </div>
+        <span id="hdrExpText" class="hidden">0/80 EXP</span>
+      </div>
+
+      <!-- Center Progress Timer Bar (Active in battle) -->
+      <div id="hdrTimerContainer" class="hidden flex-1 max-w-xs bg-indigo-950/90 rounded-full p-0.5 border border-indigo-300/25 flex items-center gap-2 px-3">
+        <span class="text-xs font-black text-amber-400">⏱️</span>
+        <div class="flex-1 bg-blue-900 h-2 rounded-full overflow-hidden">
+          <div id="timerBar" class="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 transition-all duration-300 w-full"></div>
+        </div>
+        <span id="timerText" class="text-[11px] font-black w-8 text-right text-emerald-300">45s</span>
+      </div>
+
+      <!-- Header Right: Combo Indicator -->
+      <div id="comboContainer" class="hidden flex items-center px-2 py-0.5 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 font-black text-[11px] animate-bounce">
+        🔥 <span id="comboText">0</span>
+      </div>
+    </div>
+
+    <!-- MAIN CANVAS AREA -->
+    <div class="relative flex-1 p-2 flex gap-2 overflow-hidden items-stretch">
+      
+      <!-- Damage & Visual FX Overlay -->
+      <div id="effectLayer" class="absolute inset-0 pointer-events-none z-30"></div>
+
+      <!-- ================= 1. STAGE / ENEMY SELECT SCREEN ================= -->
+      <div id="titleScreen" class="absolute inset-0 z-40 bg-gradient-to-br from-blue-950/95 via-indigo-950/95 to-emerald-950/95 backdrop-blur-md flex flex-col justify-between p-3 gap-2">
+        
+        <!-- Top Compact Title & Minimal Status -->
+        <div class="flex items-center justify-between gap-3 bg-indigo-950/65 px-5 py-2.5 rounded-2xl border border-indigo-300/25 shadow-lg shrink-0">
+          <h1 class="text-2xl sm:text-3xl font-black tracking-tight whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-400 to-rose-400 drop-shadow">
+            タイピングモンスター
+          </h1>
+
+          <!-- Minimal Progress Status Box -->
+          <div class="flex items-center gap-3 bg-blue-950/85 px-3.5 py-1.5 rounded-xl border border-amber-400/30 text-xs shrink-0">
+            <div class="flex items-center gap-1">
+              <span class="text-amber-300 font-bold">👑</span>
+              <span id="stgPlayerLv" class="font-black text-white text-sm">Lv.1</span>
+            </div>
+            <div class="h-3.5 w-px bg-indigo-400/30"></div>
+            <div class="flex items-center gap-1">
+              <span class="text-emerald-300 font-bold">⭐</span>
+              <span id="stgClearedCount" class="font-black text-emerald-400 text-sm">0 / 100</span>
+            </div>
+            <span id="stgUnlockedRange" class="hidden">Lv.1 まで</span>
+          </div>
+        </div>
+
+        <!-- Bottom Full-Width Monster Stage Selection Grid -->
+        <div class="flex-1 flex flex-col justify-between space-y-2 overflow-hidden">
+          <!-- Stage Tier Tabs (Lv.1-100) -->
+          <div id="stagePageTabs" class="grid grid-cols-10 gap-1 shrink-0">
+            <!-- Populated dynamically with JS -->
+          </div>
+
+          <!-- 5 Columns x 2 Rows Full-Height Monster Grid -->
+          <div id="enemyGrid" class="flex-1 grid grid-cols-5 grid-rows-2 gap-2 overflow-hidden">
+            <!-- Populated dynamically with JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 2. IN-GAME BATTLE SCREEN ================= -->
+      <div id="gameScreen" class="hidden flex-1 flex gap-2.5 w-full h-full">
+        
+        <!-- LEFT ~1/3: MONSTER STAGE AREA -->
+        <div id="monsterStageCard" class="w-[32%] glass-card rounded-xl p-2.5 flex flex-col justify-between items-center relative overflow-hidden border border-emerald-400/35">
+          <div class="absolute inset-0 bg-gradient-to-b from-blue-800/30 via-transparent to-emerald-950/45 pointer-events-none"></div>
+          <!-- Red/Gold Impact Flash Overlay -->
+          <div id="monsterDamageFlash" class="absolute inset-0 bg-rose-500/0 pointer-events-none z-20 transition-colors duration-100"></div>
+          <!-- Dedicated Monster Attack & Damage FX Layer -->
+          <div id="monsterFxLayer" class="absolute inset-0 pointer-events-none z-30 overflow-hidden"></div>
+
+          <!-- Monster Level / Name / Element Header -->
+          <div class="w-full bg-blue-950/85 rounded-lg border border-indigo-300/20 z-10 p-1.5 flex items-center justify-between gap-1.5">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span id="monsterElementBadge" class="px-1.5 py-0.5 rounded font-black text-[10px] bg-emerald-600/80 text-white shrink-0">🌿</span>
+              <span id="monsterName" class="font-black text-amber-300 text-xs sm:text-sm truncate">タネッピ</span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <span id="monsterLevel" class="font-black px-1.5 py-0.5 rounded bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-[10px]">Lv.1</span>
+              <span id="monsterEvoStage" class="hidden">★ 第1段階</span>
+            </div>
+          </div>
+
+          <!-- Monster SVG Visual Canvas -->
+          <div class="flex-1 w-full flex items-center justify-center relative overflow-visible my-1 z-10">
+            <div id="monsterAvatarWrapper" class="relative flex items-center justify-center transition-all duration-300 transform" style="width: 112px; height: 112px;">
+              <div id="monsterSvgContainer" class="w-full h-full animate-float">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Monster HP Bar -->
+          <div class="w-full bg-blue-950/85 rounded-lg p-1.5 border border-indigo-300/20 z-10 space-y-0.5">
+            <div class="flex justify-between text-[10px] font-black px-0.5">
+              <span class="text-rose-300">HP</span>
+              <span id="monsterHpText" class="text-indigo-100">4/4</span>
+            </div>
+            <div class="w-full bg-blue-900 h-2.5 rounded-full overflow-hidden p-0.5">
+              <div id="monsterHpBar" class="h-full bg-gradient-to-r from-rose-500 to-amber-400 rounded-full transition-all duration-300 w-full"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT ~2/3: FULL CONSOLE (SCORE -> TARGET WORD -> ALPHABET -> KEYBOARD DIAGRAM) -->
+        <div class="w-[68%] glass-card rounded-xl p-2.5 flex flex-col justify-between items-center relative border border-indigo-300/35 shadow-xl overflow-hidden gap-1.5">
+          
+          <!-- Top Meta Strip: Subject, Word Progress & Minimal Live Stats -->
+          <div class="w-full flex justify-between items-center gap-2 shrink-0">
+            <div class="flex items-center gap-2">
+              <span id="subjectBadge" class="px-2.5 py-0.5 rounded-md bg-indigo-600 text-white font-black text-xs shadow">
+                [理科]
+              </span>
+              <span id="wordProgressText" class="text-xs text-indigo-100 font-black">
+                1 / 4
+              </span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px] font-black">
+              <span class="px-2 py-0.5 rounded-lg bg-blue-950/90 border border-emerald-400/40 text-emerald-300">
+                🎯 <span id="accuracyText">100%</span>
+              </span>
+              <span class="px-2 py-0.5 rounded-lg bg-blue-950/90 border border-cyan-400/40 text-cyan-300">
+                ⚡ <span id="kpmText">0</span> KPM
+              </span>
+            </div>
+          </div>
+
+          <!-- 1. SCORE BANNER -->
+          <div class="w-full bg-blue-950/90 border-2 border-yellow-400/60 rounded-xl py-0.5 px-4 flex items-center justify-center gap-2 shadow-md shrink-0">
+            <span id="scoreText" class="text-xl sm:text-2xl font-black text-yellow-400 tracking-wider drop-shadow">0</span>
+            <span class="text-xs sm:text-sm font-black text-yellow-200">点</span>
+          </div>
+
+          <!-- 2. TARGET WORD -->
+          <div class="w-full flex-1 flex flex-col items-center justify-center text-center px-2 py-0.5 min-h-0">
+            <div id="wordFurigana" class="text-base sm:text-lg md:text-xl font-black text-amber-300 tracking-wider leading-tight mb-0.5">ひかり</div>
+            <div id="wordKanji" class="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-widest leading-tight drop-shadow-md break-words">光</div>
+            <div id="wordHintBanner" class="hidden mt-1.5 px-3 py-0.5 rounded-lg bg-indigo-950/90 border border-amber-400/40 text-amber-100 text-xs sm:text-sm font-bold max-w-[96%] leading-snug shadow"></div>
+          </div>
+
+          <!-- 3. ALPHABET (Romaji Guidance Box) -->
+          <div class="w-full text-center px-1 shrink-0">
+            <div id="romajiBox" class="inline-flex flex-wrap items-center justify-center bg-blue-950/95 px-5 py-1 rounded-2xl border-2 border-emerald-400/50 font-mono text-2xl sm:text-3xl font-black tracking-widest shadow-lg max-w-full">
+              <span id="romajiDone" class="text-emerald-300 font-extrabold"></span>
+              <span id="romajiCurrent" class="text-amber-300 bg-amber-400/30 px-1.5 rounded animate-pulse underline decoration-amber-400 decoration-4">h</span>
+              <span id="romajiTodo" class="text-indigo-200">ikari</span>
+            </div>
+          </div>
+
+          <!-- 4. KEYBOARD DIAGRAM -->
+          <div class="w-full bg-blue-950/90 rounded-xl px-3 py-2 border border-indigo-300/25 shadow flex flex-col items-center justify-center shrink-0">
+            <div id="virtualKeyboard" class="flex flex-col gap-1.5 items-center w-full">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= 3. BATTLE RESULT & LEVEL UP SCREEN ================= -->
+      <div id="resultScreen" class="hidden absolute inset-0 z-40 bg-gradient-to-br from-blue-950/95 via-indigo-950/95 to-emerald-950/95 backdrop-blur-md flex flex-row items-center justify-between p-4 sm:p-5 gap-3">
+        
+        <!-- Left: Evaluation & Level-up Banner -->
+        <div class="flex flex-col space-y-2 text-left w-[30%]">
+          <div id="resOutcomeHeader" class="text-amber-400 font-black text-xl sm:text-2xl tracking-wide flex items-center gap-1.5">
+            🎉 クリア！
+          </div>
+          
+          <div id="rankBadge" class="glass-card py-2 px-3 rounded-xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-emerald-500/20">
+            <div id="rankTitle" class="text-base sm:text-lg font-black text-yellow-300 drop-shadow">👑 タイピングマスター</div>
+          </div>
+
+          <div class="bg-blue-950/90 px-3 py-1.5 rounded-xl border border-indigo-300/25 flex items-center justify-between">
+            <span class="text-[11px] text-indigo-200 font-bold">EXP</span>
+            <span id="resExpGained" class="text-sm font-black text-amber-300">+150 EXP</span>
+          </div>
+
+          <!-- Level Up Notification Box -->
+          <div id="levelUpBox" class="hidden glass-card p-2 rounded-xl border border-yellow-400 bg-yellow-500/20 animate-levelup text-center">
+            <div class="text-xs font-black text-yellow-300">✨ LEVEL UP! Lv.<span id="resNewLevel" class="text-white text-base">2</span> ✨</div>
+          </div>
+        </div>
+
+        <!-- Middle: Step-by-Step Score Breakdown Card -->
+        <div class="flex-1 glass-card p-3 sm:p-4 rounded-2xl border-2 border-yellow-400/45 bg-blue-950/90 shadow-2xl flex flex-col justify-between space-y-1.5">
+          <div class="space-y-1.5 text-xs sm:text-sm font-bold">
+            <!-- Base Score -->
+            <div class="flex justify-between items-center px-2.5 py-1 rounded-lg bg-indigo-950/85">
+              <span class="text-indigo-100">基本スコア</span>
+              <span id="resBaseScore" class="font-black text-white text-base">0 点</span>
+            </div>
+
+            <!-- Step 1: Accuracy Bonus -->
+            <div id="bonusRowAccuracy" class="flex justify-between items-center px-2.5 py-1 rounded-lg bg-emerald-900/65 border border-emerald-400/40 opacity-0 transition-all duration-300">
+              <span class="text-emerald-200">🎯 正確率 (<span id="resAccuracy">100%</span>)</span>
+              <span id="resBonusAccuracy" class="font-black text-emerald-300 text-base">+0 点</span>
+            </div>
+
+            <!-- Step 2: Speed Bonus -->
+            <div id="bonusRowSpeed" class="flex justify-between items-center px-2.5 py-1 rounded-lg bg-cyan-900/65 border border-cyan-400/40 opacity-0 transition-all duration-300">
+              <span class="text-cyan-200">⚡ 速さ (<span id="resKpm">0</span> KPM)</span>
+              <span id="resBonusSpeed" class="font-black text-cyan-300 text-base">+0 点</span>
+            </div>
+
+            <!-- Step 3: Consecutive Combo Bonus -->
+            <div id="bonusRowCombo" class="flex justify-between items-center px-2.5 py-1 rounded-lg bg-amber-900/65 border border-amber-400/40 opacity-0 transition-all duration-300">
+              <span class="text-amber-200">🔥 連続 (<span id="resMaxCombo">0</span>)</span>
+              <span id="resBonusCombo" class="font-black text-amber-300 text-base">+0 点</span>
+            </div>
+          </div>
+
+          <!-- Total Final Score -->
+          <div class="pt-1.5 border-t-2 border-yellow-400/40 flex justify-between items-center px-2.5">
+            <span class="text-sm sm:text-base font-black text-yellow-200">合計</span>
+            <span id="resScore" class="text-2xl sm:text-3xl font-black text-yellow-400 drop-shadow transition-transform duration-200">0 点</span>
+          </div>
+        </div>
+
+        <!-- Right: Action Buttons -->
+        <div class="flex flex-col gap-2.5 w-[26%]">
+          <button id="nextLevelBtn" onclick="game.startNextLevel()" class="py-3 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg border-2 border-yellow-200 transition transform hover:scale-105 active:scale-95 leading-snug flex flex-col items-center justify-center gap-0.5">
+            <span>つぎへ 🚀</span>
+            <span id="nextLevelSpaceHint" class="text-[10px] px-2 py-0.5 rounded bg-slate-950/20 font-extrabold">[Space]</span>
+          </button>
+          <button id="retryBtn" onclick="game.retryStage()" class="py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg border-2 border-emerald-200 transition transform hover:scale-105 active:scale-95 leading-snug flex flex-col items-center justify-center gap-0.5">
+            <span>もういちど 🔄</span>
+            <span id="retrySpaceHint" class="hidden text-[10px] px-2 py-0.5 rounded bg-slate-950/20 font-extrabold">[Space]</span>
+          </button>
+          <button onclick="game.showTitleScreen()" class="py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-white/10 transition">
+            もどる 🗺️
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INSTRUCTIONS MODAL -->
+    <div id="instructionsModal" class="hidden absolute inset-0 z-50 p-4 bg-gradient-to-br from-blue-950/95 via-indigo-950/95 to-emerald-950/95 backdrop-blur-md flex flex-col justify-between">
+      <div class="flex items-center justify-between border-b border-indigo-300/20 pb-2">
+        <h3 class="font-black text-base text-amber-300">📖 あそびかた & 小学3年生のタイピング</h3>
+        <button onclick="game.toggleInstructionsModal()" class="text-indigo-200 hover:text-white font-bold text-xl px-2">✕</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto my-2 grid grid-cols-2 gap-3 text-xs text-slate-100 leading-relaxed pr-1">
+        <div class="bg-blue-950/90 p-3 rounded-xl border border-indigo-300/25 space-y-1">
+          <h4 class="font-bold text-emerald-300 text-xs">🎮 ゲームのルール</h4>
+          <p>・1回のプレイで選んだモンスター1体を倒そう！</p>
+          <p>・ノーミスで連続正解すると問題数がアップ！（最大15問）</p>
+          <p>・キーを間違えると、ペナルティで残り時間が減るので注意！</p>
+          <p>・難しいレベルでは「ことわざ」や「慣用句」も登場するよ！</p>
+          <p>・結果画面では <span class="text-amber-300 font-bold">Spaceキー</span> で次のプレイに進めるよ！</p>
+        </div>
+
+        <div class="bg-blue-950/90 p-3 rounded-xl border border-indigo-300/25 space-y-1">
+          <h4 class="font-bold text-amber-300 text-xs">💡 小学3年生のローマ字入力ルール</h4>
+          <ul class="space-y-0.5 text-indigo-100 text-[11px]">
+            <li>・<span class="text-white font-bold">し</span>：<code class="bg-indigo-900 px-1 rounded text-amber-300">shi</code> / <code class="bg-indigo-900 px-1 rounded text-amber-300">si</code> どちらもOK！</li>
+            <li>・<span class="text-white font-bold">ち</span>：<code class="bg-indigo-900 px-1 rounded text-amber-300">chi</code> / <code class="bg-indigo-900 px-1 rounded text-amber-300">ti</code> どちらもOK！</li>
+            <li>・<span class="text-white font-bold">つ</span>：<code class="bg-indigo-900 px-1 rounded text-amber-300">tsu</code> / <code class="bg-indigo-900 px-1 rounded text-amber-300">tu</code> どちらもOK！</li>
+            <li>・<span class="text-white font-bold">ふ</span>：<code class="bg-indigo-900 px-1 rounded text-amber-300">fu</code> / <code class="bg-indigo-900 px-1 rounded text-amber-300">hu</code> どちらもOK！</li>
+            <li>・<span class="text-white font-bold">じ</span>：<code class="bg-indigo-900 px-1 rounded text-amber-300">ji</code> / <code class="bg-indigo-900 px-1 rounded text-amber-300">zi</code> どちらもOK！</li>
+            <li>・<span class="text-white font-bold">ん</span>：いつでも <code class="bg-indigo-900 px-1 rounded text-amber-300">nn</code> と入力！</li>
+          </ul>
+        </div>
+      </div>
+
+      <button onclick="game.toggleInstructionsModal()" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs">
+        とじる
+      </button>
+    </div>
+
+    <!-- RESET CONFIRMATION MODAL -->
+    <div id="resetConfirmModal" class="hidden absolute inset-0 z-50 p-4 bg-blue-950/90 backdrop-blur-md flex items-center justify-center">
+      <div class="glass-card max-w-sm w-full p-4 rounded-2xl border-2 border-rose-400/50 text-center space-y-3 shadow-2xl">
+        <div class="text-base font-black text-rose-300">⚠️ 記録のリセット確認</div>
+        <p class="text-xs text-indigo-100 leading-relaxed">
+          これまでに保存したレベル・クリア記録をすべて消して、レベル1からやり直しますか？
+        </p>
+        <div class="flex gap-2 pt-1">
+          <button onclick="game.closeResetModal()" class="flex-1 py-2 rounded-xl bg-indigo-900 hover:bg-indigo-800 text-indigo-100 font-bold text-xs border border-indigo-400/30 transition">
+            やめる
+          </button>
+          <button onclick="game.confirmResetPlayerProgressData()" class="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow transition">
+            消してリセットする
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /**
+     * Grade 3 Curriculum Word, Idiom & Proverb Bank (Scaling up to Level 100)
+     */
+    const MAX_LEVEL = 100;
+    const LOCAL_BACKUP_KEY = 'typing_monster_g3_progress_v2';
+
+    const WORD_BANK = {
+      1: [
+        { kanji: '光', furigana: 'ひかり', subject: '理科' },
+        { kanji: '音', furigana: 'おと', subject: '理科' },
+        { kanji: '風', furigana: 'かぜ', subject: '理科' },
+        { kanji: 'ゴム', furigana: 'ごむ', subject: '理科' },
+        { kanji: '頭', furigana: 'あたま', subject: '理科' },
+        { kanji: 'むね', furigana: 'むね', subject: '理科' },
+        { kanji: 'はら', furigana: 'はら', subject: '理科' },
+        { kanji: 'さなぎ', furigana: 'さなぎ', subject: '理科' },
+        { kanji: '子葉', furigana: 'しよう', subject: '理科' },
+        { kanji: '根', furigana: 'ね', subject: '理科' },
+        { kanji: 'くき', furigana: 'くき', subject: '理科' },
+        { kanji: '葉', furigana: 'は', subject: '理科' },
+        { kanji: '円', furigana: 'えん', subject: '算数' },
+        { kanji: '球', furigana: 'きゅう', subject: '算数' },
+        { kanji: '重さ', furigana: 'おもさ', subject: '算数' },
+        { kanji: '長さ', furigana: 'ながさ', subject: '算数' },
+        { kanji: '秒', furigana: 'びょう', subject: '算数' },
+        { kanji: '東', furigana: 'ひがし', subject: '社会' },
+        { kanji: '西', furigana: 'にし', subject: '社会' },
+        { kanji: '南', furigana: 'みなみ', subject: '社会' },
+        { kanji: '北', furigana: 'きた', subject: '社会' }
+      ],
+      2: [
+        { kanji: '主語', furigana: 'しゅご', subject: '国語' },
+        { kanji: '述語', furigana: 'じゅつご', subject: '国語' },
+        { kanji: '分数', furigana: 'ぶんすう', subject: '算数' },
+        { kanji: '分母', furigana: 'ぶんぼ', subject: '算数' },
+        { kanji: '分子', furigana: 'ぶんし', subject: '算数' },
+        { kanji: '一億', furigana: 'いちおく', subject: '算数' },
+        { kanji: '中心', furigana: 'ちゅうしん', subject: '算数' },
+        { kanji: '半径', furigana: 'はんけい', subject: '算数' },
+        { kanji: '直径', furigana: 'ちょっけい', subject: '算数' },
+        { kanji: 'グラム', furigana: 'ぐらむ', subject: '算数' },
+        { kanji: 'トン', furigana: 'とん', subject: '算数' },
+        { kanji: '時刻', furigana: 'じこく', subject: '算数' },
+        { kanji: '時間', furigana: 'じかん', subject: '算数' },
+        { kanji: '理科', furigana: 'りか', subject: '理科' },
+        { kanji: '昆虫', furigana: 'こんちゅう', subject: '理科' },
+        { kanji: '日なた', furigana: 'ひなた', subject: '理科' },
+        { kanji: '日かげ', furigana: 'ひかげ', subject: '理科' },
+        { kanji: 'はんしゃ', furigana: 'はんしゃ', subject: '理科' },
+        { kanji: '振動', furigana: 'しんどう', subject: '理科' },
+        { kanji: '方位', furigana: 'ほうい', subject: '社会' },
+        { kanji: '音楽', furigana: 'おんがく', subject: '音楽' },
+        { kanji: '音符', furigana: 'おんぷ', subject: '音楽' },
+        { kanji: '休符', furigana: 'きゅうふ', subject: '音楽' }
+      ],
+      3: [
+        { kanji: 'だんらく', furigana: 'だんらく', subject: '国語' },
+        { kanji: '見出し語', furigana: 'みだしご', subject: '国語' },
+        { kanji: '国語辞典', furigana: 'こくごじてん', subject: '国語' },
+        { kanji: '三角形', furigana: 'さんかくけい', subject: '算数' },
+        { kanji: '棒グラフ', furigana: 'ぼうぐらふ', subject: '算数' },
+        { kanji: '地図記号', furigana: 'ちずきごう', subject: '社会' },
+        { kanji: '消火栓', furigana: 'しょうかせん', subject: '社会' },
+        { kanji: '交通安全', furigana: 'こうつうあんぜん', subject: '社会' },
+        { kanji: 'ト音記号', furigana: 'とおんきごう', subject: '音楽' },
+        { kanji: 'のこぎり', furigana: 'のこぎり', subject: '図工' },
+        { kanji: 'かなづち', furigana: 'かなづち', subject: '図工' },
+        { kanji: 'くぎ打ち', furigana: 'くぎうち', subject: '図工' },
+        { kanji: '太陽の光', furigana: 'たいようのひかり', subject: '理科' },
+        { kanji: '磁石の極', furigana: 'じしゃくのきょく', subject: '理科' },
+        { kanji: '電気を通す', furigana: 'でんきをとおす', subject: '理科' },
+        { kanji: '豆電球', furigana: 'まめでんきゅう', subject: '理科' },
+        { kanji: '虫めがね', furigana: 'むしめがね', subject: '理科' },
+        { kanji: '地域の行事', furigana: 'ちいきのぎょうじ', subject: '社会' },
+        { kanji: '工場の仕事', furigana: 'こうじょうのしごと', subject: '社会' },
+        { kanji: '農家の工夫', furigana: 'のうかのくふう', subject: '社会' }
+      ],
+      4: [
+        { kanji: '千万の位', furigana: 'せんまんのくらい', subject: '算数' },
+        { kanji: 'キログラム', furigana: 'きろぐらむ', subject: '算数' },
+        { kanji: 'キロメートル', furigana: 'きろめーとる', subject: '算数' },
+        { kanji: '音のふるえ', furigana: 'おとのふるえ', subject: '理科' },
+        { kanji: '方位じしん', furigana: 'ほういじしん', subject: '社会' },
+        { kanji: 'けいさつしょ', furigana: 'けいさつしょ', subject: '社会' },
+        { kanji: '消ぼうしょ', furigana: 'しょうぼうしょ', subject: '社会' },
+        { kanji: '防火水そう', furigana: 'ぼうかすいそう', subject: '社会' },
+        { kanji: 'ねつ感知き', furigana: 'ねつかんちき', subject: '社会' },
+        { kanji: 'リコーダー', furigana: 'りこーだー', subject: '音楽' },
+        { kanji: 'タンギング', furigana: 'たんぎんぐ', subject: '音楽' },
+        { kanji: 'マット運動', furigana: 'まっとうんどう', subject: '体育' },
+        { kanji: 'かいきゃくとび', furigana: 'かいきゃくとび', subject: '体育' },
+        { kanji: 'かかえ込みとび', furigana: 'かかえこみとび', subject: '体育' },
+        { kanji: '二等辺三角形', furigana: 'にとうへんさんかくけい', subject: '算数' },
+        { kanji: '正三角形', furigana: 'せいさんかくけい', subject: '算数' },
+        { kanji: 'モンシロチョウ', furigana: 'もんしろちょう', subject: '理科' },
+        { kanji: 'ホウセンカ', furigana: 'ほうせんか', subject: '理科' },
+        { kanji: 'ヒマワリの種', furigana: 'ひまわりのたね', subject: '理科' },
+        { kanji: 'かげの向き', furigana: 'かげのむき', subject: '理科' }
+      ],
+      5: [
+        { kanji: '頭をひねる', furigana: 'あたまをひねる', subject: '慣用句', hint: '💡 意味：いろいろと深く考える。' },
+        { kanji: '頭が下がる', furigana: 'あたまがさがる', subject: '慣用句', hint: '💡 意味：相手のりっぱな行いに感心する。' },
+        { kanji: '耳をすます', furigana: 'みみをすます', subject: '慣用句', hint: '💡 意味：よく聞こうとして注意を集中する。' },
+        { kanji: '耳が痛い', furigana: 'みみがいたい', subject: '慣用句', hint: '💡 意味：自分の弱点をつかれて聞くのがつらい。' },
+        { kanji: '目を丸くする', furigana: 'めをまるくする', subject: '慣用句', hint: '💡 意味：とてもおどろく。' },
+        { kanji: '目を見張る', furigana: 'めをみはる', subject: '慣用句', hint: '💡 意味：おどろいたり感心したりして目を大きく見開く。' },
+        { kanji: '鼻が高い', furigana: 'はながたかい', subject: '慣用句', hint: '💡 意味：得意になってじまんしたい気持ちになる。' },
+        { kanji: '鼻にかける', furigana: 'はなにかける', subject: '慣用句', hint: '💡 意味：じまんする。' },
+        { kanji: '口をそろえる', furigana: 'くちをそろえる', subject: '慣用句', hint: '💡 意味：みんなが同じことを言う。' },
+        { kanji: '口が軽い', furigana: 'くちがかるい', subject: '慣用句', hint: '💡 意味：言ってはいけないことまでつい話してしまう。' },
+        { kanji: '手が離せない', furigana: 'てがはなせない', subject: '慣用句', hint: '💡 意味：今している作業をやめることができない。' },
+        { kanji: '手を焼く', furigana: 'てをやく', subject: '慣用句', hint: '💡 意味：あつかいにくくてこまる。' },
+        { kanji: '手を貸す', furigana: 'てをかす', subject: '慣用句', hint: '💡 意味：手伝う。' },
+        { kanji: '足が棒になる', furigana: 'あしがぼうになる', subject: '慣用句', hint: '💡 意味：歩きつづけて足がくたくたにつかれる。' },
+        { kanji: '足を引っ張る', furigana: 'あしをひっぱる', subject: '慣用句', hint: '💡 意味：人のじゃまをする。' },
+        { kanji: '顔を合わせる', furigana: 'かおをあわせる', subject: '慣用句', hint: '💡 意味：直接会う。' },
+        { kanji: '顔が広い', furigana: 'かおがひろい', subject: '慣用句', hint: '💡 意味：知り合いが多い。' },
+        { kanji: '腹が立つ', furigana: 'はらがたつ', subject: '慣用句', hint: '💡 意味：おこる。' },
+        { kanji: '胸をなでおろす', furigana: 'むねをなでおろす', subject: '慣用句', hint: '💡 意味：心配ごとがなくなってほっとする。' },
+        { kanji: '心が躍る', furigana: 'こころがおどる', subject: '慣用句', hint: '💡 意味：期待してわくわくする。' }
+      ],
+      6: [
+        { kanji: '犬も歩けば棒に当たる', furigana: 'いぬもあるけばぼうにあたる', subject: 'ことわざ', hint: '💡 意味：何かをしようとすると、思いがけないさいなんにあったり、逆に幸運に出会ったりすること。' },
+        { kanji: '猿も木から落ちる', furigana: 'さるもきからおちる', subject: 'ことわざ', hint: '💡 意味：どんなに得意なことでも、ときには失敗することがあるというたとえ。' },
+        { kanji: '石の上にも三年', furigana: 'いしのうえにもさんねん', subject: 'ことわざ', hint: '💡 意味：つらくてもがまんして続ければ、いつか必ず成果が出るということ。' },
+        { kanji: '急がば回れ', furigana: 'いそがばまわれ', subject: 'ことわざ', hint: '💡 意味：急ぐときこそ、危険な近道より安全で確実な道を行くほうが早く着くということ。' },
+        { kanji: 'ちりも積もれば山となる', furigana: 'ちりもつもればやまとなる', subject: 'ことわざ', hint: '💡 意味：小さなものでも、たくさん集まれば大きなものになるというたとえ。' },
+        { kanji: '笑う門には福来る', furigana: 'わらうかどにはふくきたる', subject: 'ことわざ', hint: '💡 意味：いつもにこにこ笑っている人の家には、自然とよいことがやってくるということ。' },
+        { kanji: '良薬は口に苦し', furigana: 'りょうやくはくちににがし', subject: 'ことわざ', hint: '💡 意味：よくきく薬は苦いように、ためになる忠告は聞くのがつらいということ。' },
+        { kanji: '泣きっ面に蜂', furigana: 'なきっつらにはち', subject: 'ことわざ', hint: '💡 意味：つらいことや不幸なことが重なって起きることのたとえ。' },
+        { kanji: '二兎を追う者は一兎をも得ず', furigana: 'にとをおうものはいっとをもえず', subject: 'ことわざ', hint: '💡 意味：一度に二つのことをしようとすると、結局どちらも失敗してしまうということ。' },
+        { kanji: '早起きは三文の徳', furigana: 'はやおきはさんもんのとく', subject: 'ことわざ', hint: '💡 意味：朝早く起きると、健康によかったりよいことがあったりして得をするということ。' },
+        { kanji: '好きこそ物の上手なれ', furigana: 'すきこそもののじょうずなれ', subject: 'ことわざ', hint: '💡 意味：好きなことは熱心に努力するので、自然と上達するということ。' },
+        { kanji: '鬼に金棒', furigana: 'おににかなぼう', subject: 'ことわざ', hint: '💡 意味：ただでさえ強いものに、さらに強さが加わって無敵になること。' },
+        { kanji: '猫に小判', furigana: 'ねこにこばん', subject: 'ことわざ', hint: '💡 意味：どんなに価値のあるものでも、わからない人には何の役にも立たないというたとえ。' },
+        { kanji: '馬の耳に念仏', furigana: 'うまのみみにねんぶつ', subject: 'ことわざ', hint: '💡 意味：いくら意見を言っても、まったく聞き入れないことのたとえ。' },
+        { kanji: '転ばぬ先の杖', furigana: 'ころばぬさきのつえ', subject: 'ことわざ', hint: '💡 意味：失敗しないように、あらかじめ準備や用心をしておくこと。' },
+        { kanji: '弘法にも筆の誤り', furigana: 'こうぼうにもふでのあやまり', subject: 'ことわざ', hint: '💡 意味：書道の名人でも書きまちがえることがあるように、だれにでも失敗はあるということ。' },
+        { kanji: '井の中の蛙大海を知らず', furigana: 'いのなかのかわずたいかいをしらず', subject: 'ことわざ', hint: '💡 意味：自分のせまい知識や経験だけにとらわれて、広い世界を知らないこと。' },
+        { kanji: '百聞は一見にしかず', furigana: 'ひゃくぶんはいっけんにしかず', subject: 'ことわざ', hint: '💡 意味：人から何度も聞くより、自分で一度見るほうがよくわかるということ。' },
+        { kanji: '七転び八起き', furigana: 'ななころびやおき', subject: 'ことわざ', hint: '💡 意味：何度失敗してもあきらめずに立ち上がって努力すること。' },
+        { kanji: '石橋をたたいて渡る', furigana: 'いしばしをたたいてわたる', subject: 'ことわざ', hint: '💡 意味：失敗しないように、非常に用心深く行動することのたとえ。' }
+      ],
+      7: [
+        { kanji: 'いろいろと深く考える', furigana: 'いろいろとふかくかんがえる', subject: '慣用句の意味', hint: '💡 慣用句：頭をひねる' },
+        { kanji: '相手のりっぱな行いに感心する', furigana: 'あいてのりっぱなおこないにかんしんする', subject: '慣用句の意味', hint: '💡 慣用句：頭が下がる' },
+        { kanji: 'よく聞こうとして注意を集中する', furigana: 'よくきこうとしてちゅういをしゅうちゅうする', subject: '慣用句の意味', hint: '💡 慣用句：耳をすます' },
+        { kanji: '自分の弱点をつかれて聞くのがつらい', furigana: 'じぶんのじゃくてんをつかれてきくのがつらい', subject: '慣用句の意味', hint: '💡 慣用句：耳が痛い' },
+        { kanji: 'おどろいたり感心したりして目を大きく見開く', furigana: 'おどろいたりかんしんしたりしてめをおおきくみひらく', subject: '慣用句の意味', hint: '💡 慣用句：目を見張る' },
+        { kanji: '得意になってじまんしたい気持ちになる', furigana: 'とくいになってじまんしたいきもちになる', subject: '慣用句の意味', hint: '💡 慣用句：鼻が高い' },
+        { kanji: '言ってはいけないことまでつい話してしまう', furigana: 'いってはいけないことまでついはなしてしまう', subject: '慣用句の意味', hint: '💡 慣用句：口が軽い' },
+        { kanji: '今している作業をやめることができない', furigana: 'いましているさぎょうをやめることができない', subject: '慣用句の意味', hint: '💡 慣用句：手が離せない' },
+        { kanji: '歩きつづけて足がくたくたにつかれる', furigana: 'あるきつづけてあしがくたくたにつかれる', subject: '慣用句の意味', hint: '💡 慣用句：足が棒になる' },
+        { kanji: '心配ごとがなくなってほっとする', furigana: 'しんぱいごとがなくなってほっとする', subject: '慣用句の意味', hint: '💡 慣用句：胸をなでおろす' },
+        { kanji: '期待してわくわくする', furigana: 'きたいしてわくわくする', subject: '慣用句の意味', hint: '💡 慣用句：心が躍る' },
+        { kanji: 'みんなが同じことを言う', furigana: 'みんながおなじことをいう', subject: '慣用句の意味', hint: '💡 慣用句：口をそろえる' },
+        { kanji: 'あつかいにくくてこまる', furigana: 'あつかいにくくてこまる', subject: '慣用句の意味', hint: '💡 慣用句：手を焼く' },
+        { kanji: '人のじゃまをする', furigana: 'ひとのじゃまをする', subject: '慣用句の意味', hint: '💡 慣用句：足を引っ張る' },
+        { kanji: '知り合いが多い', furigana: 'しりあいがおおい', subject: '慣用句の意味', hint: '💡 慣用句：顔が広い' }
+      ],
+      8: [
+        { kanji: '思いがけないさいなんや幸運に出会うこと', furigana: 'おもいがけないさいなんやこううんにであうこと', subject: 'ことわざの意味', hint: '💡 ことわざ：犬も歩けば棒に当たる' },
+        { kanji: '得意なことでもときには失敗することがある', furigana: 'とくいなことでもときにはしっぱいすることがある', subject: 'ことわざの意味', hint: '💡 ことわざ：猿も木から落ちる' },
+        { kanji: 'つらくてもがまんして続ければ必ず成果が出る', furigana: 'つらくてもがまんしてつづければかならずせいかがでる', subject: 'ことわざの意味', hint: '💡 ことわざ：石の上にも三年' },
+        { kanji: '急ぐときこそ安全で確実な道を行くほうが早い', furigana: 'いそぐときこそあんぜんでかくじつなみちをいくほうがはやい', subject: 'ことわざの意味', hint: '💡 ことわざ：急がば回れ' },
+        { kanji: '小さなものでもたくさん集まれば大きなものになる', furigana: 'ちいさなものでもたくさんあつまればおおきなものになる', subject: 'ことわざの意味', hint: '💡 ことわざ：ちりも積もれば山となる' },
+        { kanji: 'いつも笑っている人の家にはよいことがやってくる', furigana: 'いつもわらっているひとのいえにはよいことがやってくる', subject: 'ことわざの意味', hint: '💡 ことわざ：笑う門には福来る' },
+        { kanji: 'ためになる忠告は聞くのがつらいということ', furigana: 'ためになるちゅうこくはきくのがつらいということ', subject: 'ことわざの意味', hint: '💡 ことわざ：良薬は口に苦し' },
+        { kanji: 'つらいことや不幸なことが重なって起きること', furigana: 'つらいことやふこうなことがかさなっておきること', subject: 'ことわざの意味', hint: '💡 ことわざ：泣きっ面に蜂' },
+        { kanji: '一度に二つのことをしようとするとどちらも失敗する', furigana: 'いちどにふたつのことをしようとするとどちらもしっぱいする', subject: 'ことわざの意味', hint: '💡 ことわざ：二兎を追う者は一兎をも得ず' },
+        { kanji: '朝早く起きると健康によかったり得をしたりする', furigana: 'あさはやくおきるとけんこうによかったりとくをしたりする', subject: 'ことわざの意味', hint: '💡 ことわざ：早起きは三文の徳' },
+        { kanji: '好きなことは熱心に努力するので自然と上達する', furigana: 'すきなことはねっしんにどりょくするのでしぜんとじょうたつする', subject: 'ことわざの意味', hint: '💡 ことわざ：好きこそ物の上手なれ' },
+        { kanji: 'ただでさえ強いものにさらに強さが加わること', furigana: 'ただでさえつよいものにさらにつよさがくわわること', subject: 'ことわざの意味', hint: '💡 ことわざ：鬼に金棒' },
+        { kanji: '価値のあるものでもわからない人には役に立たない', furigana: 'かちのあるものでもわからないひとにはやくにたたない', subject: 'ことわざの意味', hint: '💡 ことわざ：猫に小判' },
+        { kanji: 'いくら意見を言ってもまったく聞き入れないこと', furigana: 'いくらいけんをいってもまったくききいれないこと', subject: 'ことわざの意味', hint: '💡 ことわざ：馬の耳に念仏' },
+        { kanji: '失敗しないようにあらかじめ準備や用心をしておく', furigana: 'しっぱいしないようにあらかじめじゅんびやようじんをしておく', subject: 'ことわざの意味', hint: '💡 ことわざ：転ばぬ先の杖' },
+        { kanji: '書道の名人でも書きまちがえるようにだれでも失敗する', furigana: 'しょどうのめいじんでもかきまちがえるようにだれでもしっぱいする', subject: 'ことわざの意味', hint: '💡 ことわざ：弘法にも筆の誤り' },
+        { kanji: '自分のせまい知識だけにとらわれて広い世界を知らない', furigana: 'じぶんのせまいちしきだけにとらわれてひろいせかいをしらない', subject: 'ことわざの意味', hint: '💡 ことわざ：井の中の蛙大海を知らず' },
+        { kanji: '人から何度も聞くより自分で一度見るほうがよくわかる', furigana: 'ひとからなんどもきくよりじぶんでいちどみるほうがよくわかる', subject: 'ことわざの意味', hint: '💡 ことわざ：百聞は一見にしかず' },
+        { kanji: '何度失敗してもあきらめずに立ち上がって努力する', furigana: 'なんどしっぱいしてもあきらめずにたちあがってどりょくする', subject: 'ことわざの意味', hint: '💡 ことわざ：七転び八起き' },
+        { kanji: '失敗しないように非常に用心深く行動すること', furigana: 'しっぱいしないようにひじょうにようじんぶかくこうどうすること', subject: 'ことわざの意味', hint: '💡 ことわざ：石橋をたたいて渡る' }
+      ]
+    };
+
+    const SUBJECT_BADGE_COLORS = {
+      '国語': 'bg-rose-600 text-white',
+      '算数': 'bg-blue-600 text-white',
+      '理科': 'bg-emerald-600 text-white',
+      '社会': 'bg-amber-600 text-white',
+      '音楽': 'bg-purple-600 text-white',
+      '図工': 'bg-orange-600 text-white',
+      '体育': 'bg-cyan-600 text-white',
+      'ことわざ': 'bg-pink-600 text-white',
+      'ことわざの意味': 'bg-rose-700 text-white',
+      '慣用句': 'bg-fuchsia-600 text-white',
+      '慣用句の意味': 'bg-violet-600 text-white'
+    };
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+
+    /**
+     * Web Audio API Sound Effects Engine (Chromebook Speaker Optimized)
+     */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.enabled) return null;
+        try {
+          if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+              this.ctx = new AudioCtx();
+            }
+          }
+          if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+        } catch (e) {
+          console.warn('AudioContext init error:', e);
+        }
+        return this.ctx;
+      }
+
+      playHit() {
+        if (!this.enabled) return;
+        const ctx = this.init();
+        if (!ctx) return;
+        const trigger = () => {
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(780, now + 0.055);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.07);
+        };
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(trigger).catch(() => {});
+        } else {
+          trigger();
+        }
+      }
+
+      playAttackSlash(isCritical = false, isFinish = false) {
+        if (!this.enabled) return;
+        const ctx = this.init();
+        if (!ctx) return;
+        const trigger = () => {
+          const now = ctx.currentTime;
+          const dur = isFinish ? 0.38 : 0.24;
+
+          const bufferSize = Math.floor(ctx.sampleRate * dur);
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * (isFinish ? 0.14 : 0.08)));
+          }
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(isCritical ? 2400 : 1800, now);
+          filter.frequency.exponentialRampToValueAtTime(420, now + dur);
+          filter.Q.value = 1.6;
+
+          const noiseGain = ctx.createGain();
+          noiseGain.gain.setValueAtTime(isFinish ? 0.42 : 0.32, now);
+          noiseGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+          noise.connect(filter);
+          filter.connect(noiseGain);
+          noiseGain.connect(ctx.destination);
+          noise.start(now);
+
+          const punchOsc = ctx.createOscillator();
+          const punchGain = ctx.createGain();
+          punchOsc.type = 'sawtooth';
+          punchOsc.frequency.setValueAtTime(isCritical ? 260 : 210, now);
+          punchOsc.frequency.exponentialRampToValueAtTime(52, now + dur);
+
+          punchGain.gain.setValueAtTime(isFinish ? 0.36 : 0.28, now);
+          punchGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+          punchOsc.connect(punchGain);
+          punchGain.connect(ctx.destination);
+          punchOsc.start(now);
+          punchOsc.stop(now + dur + 0.01);
+        };
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(trigger).catch(() => {});
+        } else {
+          trigger();
+        }
+      }
+
+      playMiss() {
+        if (!this.enabled) return;
+        const ctx = this.init();
+        if (!ctx) return;
+        const trigger = () => {
+          const now = ctx.currentTime;
+          const pulses = [
+            { offset: 0.0, dur: 0.11, f1: 330, f2: 466 },
+            { offset: 0.14, dur: 0.14, f1: 311, f2: 440 }
+          ];
+          pulses.forEach((p) => {
+            const osc1 = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc1.type = 'sawtooth';
+            osc2.type = 'square';
+            osc1.frequency.setValueAtTime(p.f1, now + p.offset);
+            osc2.frequency.setValueAtTime(p.f2, now + p.offset);
+            gain.gain.setValueAtTime(0.28, now + p.offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + p.offset + p.dur);
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(ctx.destination);
+            osc1.start(now + p.offset);
+            osc2.start(now + p.offset);
+            osc1.stop(now + p.offset + p.dur + 0.01);
+            osc2.stop(now + p.offset + p.dur + 0.01);
+          });
+        };
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(trigger).catch(() => {});
+        } else {
+          trigger();
+        }
+      }
+
+      playMonsterTaunt(streak = 2) {
+        if (!this.enabled) return;
+        const ctx = this.init();
+        if (!ctx) return;
+        const trigger = () => {
+          const now = ctx.currentTime;
+          const notes = streak >= 3
+            ? [620, 780, 650, 840, 920]
+            : [540, 680, 580];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const start = now + idx * 0.075;
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, start);
+            osc.frequency.exponentialRampToValueAtTime(freq * 1.14, start + 0.055);
+            gain.gain.setValueAtTime(streak >= 3 ? 0.22 : 0.16, start);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.065);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.07);
+          });
+        };
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(trigger).catch(() => {});
+        } else {
+          trigger();
+        }
+      }
+
+      playWordClear() {
+        if (!this.enabled) return;
+        const ctx = this.init();
+        if (!ctx) return;
+        const trigger = () => {
+          const now = ctx.currentTime;
+          const notes = [
+            { freq: 587.33, offset: 0.0, dur: 0.11 },
+            { freq: 880.0, offset: 0.11, dur: 0.22 }
+          ];
+          notes.forEach((n) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(n.freq, now + n.offset);
+            gain.gain.setValueAtTime(0.24, now + n.offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + n.offset + n.dur);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + n.offset);
+            osc.stop(now + n.offset + n.dur + 0.01);
+          });
+        };
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(trigger).catch(() => {});
+        } else {
+          trigger();
+        }
+      }
+
+      playDefeat() {
+        if (!this.enabled) return;
+        const ctx = this.init();
+        if (!ctx) return;
+        const trigger = () => {
+          const now = ctx.currentTime;
+          const notes = [523.25, 659.25, 783.99, 1046.5];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            const start = now + idx * 0.09;
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.24, start);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.28);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.3);
+          });
+        };
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(trigger).catch(() => {});
+        } else {
+          trigger();
+        }
+      }
+
+      playBonusTick(freq = 660) {
+        if (!this.enabled) return;
+        const ctx = this.init();
+        if (!ctx) return;
+        const trigger = () => {
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        };
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(trigger).catch(() => {});
+        } else {
+          trigger();
+        }
+      }
+    }
+
+    /**
+     * Main Typing Monster RPG Game Controller
+     */
+    class TypingMonsterGame {
+      constructor() {
+        this.sound = new SoundEngine();
+
+        // Cloud & Local Storage State
+        this.db = null;
+        this.auth = null;
+        this.user = null;
+        this.unsubscribeSnapshot = null;
+        this.pendingSave = false;
+
+        // Persistent Progress (Levels & Clears only; score always starts at 0 per play)
+        this.playerLevel = 1;
+        this.playerExp = 0;
+        this.unlockedLevel = 1;
+        this.clearedLevels = [];
+        this.selectedStagePage = 0;
+
+        // Load instant local backup if available
+        this.loadLocalBackup();
+
+        // Active Battle State
+        this.isPlaying = false;
+        this.isFinishing = false;
+        this.smirkTimeout = null;
+        this.consecutiveMistakes = 0;
+        this.resultShownAt = 0;
+        this.currentMonster = null;
+        this.monsterHp = 4;
+        this.monsterMaxHp = 4;
+        this.wordsCompletedCount = 0;
+        this.currentWordMistakes = 0;
+
+        this.timeLeft = 45;
+        this.maxTime = 45;
+        this.timerInterval = null;
+
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.totalKeystrokes = 0;
+        this.correctKeystrokes = 0;
+        this.battleStartTime = 0;
+
+        // Word Pool & Romaji Parsing State
+        this.unusedPoolByLevel = {};
+        this.usedWordsThisPlay = new Set();
+        this.currentWordObj = null;
+        this.tokens = [];
+        this.tokenIndex = 0;
+        this.tokenTyped = '';
+
+        this.selectedStagePage = Math.floor((Math.min(this.unlockedLevel, MAX_LEVEL) - 1) / 10);
+        this.buildVirtualKeyboard();
+        const resumedBattle = this.restoreActiveBattleIfAvailable();
+        if (!resumedBattle) this.renderTitleScreen();
+        this.bindEvents();
+        this.initCloudStorage();
+      }
+
+      loadLocalBackup() {
+        try {
+          const raw = localStorage.getItem(LOCAL_BACKUP_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          if (typeof data.playerLevel === 'number') {
+            this.playerLevel = Math.max(1, Math.min(MAX_LEVEL, data.playerLevel));
+          }
+          if (typeof data.playerExp === 'number') {
+            this.playerExp = Math.max(0, data.playerExp);
+          }
+          if (typeof data.unlockedLevel === 'number') {
+            this.unlockedLevel = Math.max(1, Math.min(MAX_LEVEL, data.unlockedLevel));
+          }
+          if (Array.isArray(data.clearedLevels)) {
+            this.clearedLevels = data.clearedLevels
+              .filter(n => typeof n === 'number' && n >= 1 && n <= MAX_LEVEL)
+              .sort((a, b) => a - b);
+          }
+        } catch (e) {
+          console.warn('Local backup read warning:', e);
+        }
+      }
+
+      saveLocalBackup() {
+        try {
+          const payload = {
+            playerLevel: this.playerLevel,
+            playerExp: this.playerExp,
+            unlockedLevel: this.unlockedLevel,
+            clearedLevels: this.clearedLevels,
+            activeBattle: this.getActiveBattleSnapshot(),
+            updatedAt: Date.now()
+          };
+          localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(payload));
+        } catch (e) {
+          console.warn('Local backup write warning:', e);
+        }
+      }
+
+      getActiveBattleSnapshot() {
+        if (!this.isPlaying || this.isFinishing || !this.currentMonster || !this.currentWordObj) return null;
+        return {
+          version: 1,
+          level: this.currentMonster.level,
+          monsterHp: this.monsterHp,
+          monsterMaxHp: this.monsterMaxHp,
+          wordsCompletedCount: this.wordsCompletedCount,
+          currentWordMistakes: this.currentWordMistakes,
+          timeLeft: this.timeLeft,
+          maxTime: this.maxTime,
+          score: this.score,
+          combo: this.combo,
+          maxCombo: this.maxCombo,
+          totalKeystrokes: this.totalKeystrokes,
+          correctKeystrokes: this.correctKeystrokes,
+          elapsedMs: Math.max(0, Date.now() - this.battleStartTime),
+          consecutiveMistakes: this.consecutiveMistakes,
+          usedWordsThisPlay: Array.from(this.usedWordsThisPlay || []),
+          currentWordObj: this.currentWordObj,
+          tokenIndex: this.tokenIndex,
+          tokenTyped: this.tokenTyped
+        };
+      }
+
+      applyMonsterEvolutionSize(evoStage) {
+        const wrapper = document.getElementById('monsterAvatarWrapper');
+        if (!wrapper) return;
+        // Stage 1 starts at 96px and scales up to 248px at Stage 10 so final forms burst dramatically inside the stage frame!
+        const sizePx = Math.round(96 + (evoStage - 1) * 16.9);
+        wrapper.style.width = `${sizePx}px`;
+        wrapper.style.height = `${sizePx}px`;
+      }
+
+      restoreActiveBattleIfAvailable() {
+        try {
+          const raw = localStorage.getItem(LOCAL_BACKUP_KEY);
+          if (!raw) return false;
+          const snapshot = JSON.parse(raw).activeBattle;
+          if (!snapshot || snapshot.version !== 1 || !snapshot.currentWordObj ||
+              typeof snapshot.level !== 'number' || typeof snapshot.timeLeft !== 'number') return false;
+
+          this.currentMonster = this.getMonsterConfig(Math.max(1, Math.min(MAX_LEVEL, snapshot.level)));
+          this.monsterHp = Math.max(0, Number(snapshot.monsterHp) || 0);
+          this.monsterMaxHp = Math.max(1, Number(snapshot.monsterMaxHp) || this.currentMonster.baseHp);
+          this.wordsCompletedCount = Math.max(0, Number(snapshot.wordsCompletedCount) || 0);
+          this.currentWordMistakes = Math.max(0, Number(snapshot.currentWordMistakes) || 0);
+          this.timeLeft = Math.max(0, Number(snapshot.timeLeft) || 0);
+          this.maxTime = Math.max(1, Number(snapshot.maxTime) || this.currentMonster.timeLimit);
+          this.score = Math.max(0, Number(snapshot.score) || 0);
+          this.combo = Math.max(0, Number(snapshot.combo) || 0);
+          this.maxCombo = Math.max(0, Number(snapshot.maxCombo) || 0);
+          this.totalKeystrokes = Math.max(0, Number(snapshot.totalKeystrokes) || 0);
+          this.correctKeystrokes = Math.max(0, Number(snapshot.correctKeystrokes) || 0);
+          this.consecutiveMistakes = Math.max(0, Number(snapshot.consecutiveMistakes) || 0);
+          this.battleStartTime = Date.now() - Math.max(0, Number(snapshot.elapsedMs) || 0);
+          this.usedWordsThisPlay = new Set(Array.isArray(snapshot.usedWordsThisPlay) ? snapshot.usedWordsThisPlay : []);
+          this.currentWordObj = snapshot.currentWordObj;
+          this.tokens = this.tokenizeKana(this.currentWordObj.furigana);
+          this.tokenIndex = Math.max(0, Math.min(this.tokens.length, Number(snapshot.tokenIndex) || 0));
+          this.tokenTyped = typeof snapshot.tokenTyped === 'string' ? snapshot.tokenTyped : '';
+          this.isPlaying = true;
+          this.isFinishing = false;
+
+          document.getElementById('titleScreen').classList.add('hidden');
+          document.getElementById('resultScreen').classList.add('hidden');
+          document.getElementById('gameScreen').classList.remove('hidden');
+          document.getElementById('hdrTimerContainer').classList.remove('hidden');
+          document.getElementById('comboContainer').classList.toggle('hidden', this.combo < 3);
+          document.getElementById('monsterName').textContent = this.currentMonster.name;
+          document.getElementById('monsterLevel').textContent = `Lv.${this.currentMonster.level}`;
+          const elBadge = document.getElementById('monsterElementBadge');
+          elBadge.textContent = this.currentMonster.elementLabel;
+          elBadge.className = `px-1.5 py-0.5 rounded font-black ${this.currentMonster.elementBadgeCls}`;
+          document.getElementById('monsterEvoStage').textContent = this.currentMonster.evoFull;
+          document.getElementById('monsterSvgContainer').innerHTML = this.currentMonster.svg;
+          this.applyMonsterEvolutionSize(this.currentMonster.evoStage);
+          document.getElementById('scoreText').textContent = this.score;
+          document.getElementById('accuracyText').textContent = this.totalKeystrokes
+            ? `${Math.round(this.correctKeystrokes / this.totalKeystrokes * 100)}%` : '100%';
+          document.getElementById('kpmText').textContent = this.battleStartTime < Date.now()
+            ? Math.round(this.correctKeystrokes / Math.max(0.05, (Date.now() - this.battleStartTime) / 60000)) : '0';
+
+          const badge = document.getElementById('subjectBadge');
+          badge.textContent = `[${this.currentWordObj.subject}]`;
+          const colorCls = SUBJECT_BADGE_COLORS[this.currentWordObj.subject] || 'bg-indigo-600 text-white';
+          badge.className = `px-2.5 py-0.5 rounded-md font-black text-xs shadow ${colorCls}`;
+          const kanjiEl = document.getElementById('wordKanji');
+          const len = this.currentWordObj.kanji.length;
+          kanjiEl.className = len >= 12
+            ? 'text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-normal leading-snug drop-shadow-md break-words'
+            : len >= 7
+              ? 'text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-wider leading-tight drop-shadow-md break-words'
+              : 'text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-widest leading-tight drop-shadow-md break-words';
+          document.getElementById('wordFurigana').textContent = this.currentWordObj.furigana;
+          kanjiEl.textContent = this.currentWordObj.kanji;
+          const hint = document.getElementById('wordHintBanner');
+          if (hint) {
+            if (this.currentWordObj.hint) {
+              hint.textContent = this.currentWordObj.hint;
+              hint.classList.remove('hidden');
+            } else {
+              hint.classList.add('hidden');
+            }
+          }
+          document.getElementById('comboText').textContent = this.combo;
+          this.updateMonsterHpUi();
+          this.updateTimerUi();
+          this.updateLiveStats();
+          this.renderWordDisplay();
+
+          if (this.timeLeft <= 0) {
+            this.endBattle(false);
+          } else {
+            this.startTimer();
+            const badgeStatus = document.getElementById('saveStatusBadge');
+            if (badgeStatus) badgeStatus.textContent = '💾 つづきから再開';
+          }
+          return true;
+        } catch (e) {
+          console.warn('Battle restore warning:', e);
+          return false;
+        }
+      }
+
+      async initCloudStorage() {
+        const badge = document.getElementById('saveStatusBadge');
+        try {
+          if (!firebaseConfig) {
+            if (badge) badge.textContent = '💾 端末に記録保存済';
+            return;
+          }
+
+          const [
+            { initializeApp },
+            { getAuth, signInAnonymously, signInWithCustomToken },
+            { getFirestore, doc, setDoc, onSnapshot }
+          ] = await Promise.all([
+            import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"),
+            import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"),
+            import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js")
+          ]);
+
+          const app = initializeApp(firebaseConfig);
+          this.auth = getAuth(app);
+          this.db = getFirestore(app);
+
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            const cred = await signInWithCustomToken(this.auth, __initial_auth_token);
+            this.user = cred.user;
+          } else {
+            const cred = await signInAnonymously(this.auth);
+            this.user = cred.user;
+          }
+
+          if (!this.user) return;
+
+          const progressDocRef = doc(this.db, 'artifacts', appId, 'users', this.user.uid, 'progress', 'saveData');
+
+          this.unsubscribeSnapshot = onSnapshot(
+            progressDocRef,
+            (docSnap) => {
+              if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (typeof data.playerLevel === 'number') {
+                  this.playerLevel = Math.max(this.playerLevel, Math.max(1, Math.min(MAX_LEVEL, data.playerLevel)));
+                }
+                if (typeof data.playerExp === 'number' && data.playerLevel >= this.playerLevel) {
+                  this.playerExp = Math.max(this.playerExp, Math.max(0, data.playerExp));
+                }
+                if (typeof data.unlockedLevel === 'number') {
+                  this.unlockedLevel = Math.max(this.unlockedLevel, Math.max(1, Math.min(MAX_LEVEL, data.unlockedLevel)));
+                }
+                if (Array.isArray(data.clearedLevels)) {
+                  const validSaved = data.clearedLevels.filter(n => typeof n === 'number' && n >= 1 && n <= MAX_LEVEL);
+                  const mergedSet = new Set([...this.clearedLevels, ...validSaved]);
+                  this.clearedLevels = Array.from(mergedSet).sort((a, b) => a - b);
+                }
+
+                this.saveLocalBackup();
+
+                if (!this.isPlaying && document.getElementById('resultScreen').classList.contains('hidden')) {
+                  this.selectedStagePage = Math.floor((Math.min(this.unlockedLevel, MAX_LEVEL) - 1) / 10);
+                  this.renderTitleScreen();
+                } else {
+                  this.updateHeaderPlayerBar();
+                }
+              } else if (this.clearedLevels.length > 0 || this.unlockedLevel > 1) {
+                this.saveProgress(true);
+              }
+
+              if (badge) {
+                badge.textContent = '☁️ クリア記録保存済';
+              }
+
+              if (this.pendingSave) {
+                this.pendingSave = false;
+                this.saveProgress();
+              }
+            },
+            (error) => {
+              console.warn('Cloud progress sync warning:', error);
+              if (badge) {
+                badge.textContent = '💾 端末に記録保存済';
+              }
+            }
+          );
+        } catch (e) {
+          console.warn('Cloud storage init warning:', e);
+          if (badge) {
+            badge.textContent = '💾 端末に記録保存済';
+          }
+        }
+      }
+
+      async saveProgress(forceOverwrite = false) {
+        this.saveLocalBackup();
+        const badge = document.getElementById('saveStatusBadge');
+        if (!this.user || !this.db) {
+          this.pendingSave = true;
+          if (badge) badge.textContent = '💾 端末に記録保存済';
+          return;
+        }
+        try {
+          if (badge) {
+            badge.textContent = '⏳ 記録を保存中...';
+          }
+          const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+          const progressDocRef = doc(this.db, 'artifacts', appId, 'users', this.user.uid, 'progress', 'saveData');
+          const payload = {
+            playerLevel: this.playerLevel,
+            playerExp: this.playerExp,
+            unlockedLevel: this.unlockedLevel,
+            clearedLevels: this.clearedLevels,
+            updatedAt: Date.now()
+          };
+          if (forceOverwrite) {
+            await setDoc(progressDocRef, payload);
+          } else {
+            await setDoc(progressDocRef, payload, { merge: true });
+          }
+          if (badge) {
+            badge.textContent = '☁️ クリア記録保存済';
+          }
+        } catch (e) {
+          console.warn('Cloud save warning:', e);
+          if (badge) {
+            badge.textContent = '💾 端末に記録保存済';
+          }
+        }
+      }
+
+      getNextLevelExp(lv) {
+        return 80 + (lv - 1) * 35;
+      }
+
+      openResetModal() {
+        document.getElementById('resetConfirmModal').classList.remove('hidden');
+      }
+
+      closeResetModal() {
+        document.getElementById('resetConfirmModal').classList.add('hidden');
+      }
+
+      async confirmResetPlayerProgressData() {
+        this.playerLevel = 1;
+        this.playerExp = 0;
+        this.unlockedLevel = 1;
+        this.clearedLevels = [];
+        this.selectedStagePage = 0;
+        this.unusedPoolByLevel = {};
+        try {
+          localStorage.removeItem(LOCAL_BACKUP_KEY);
+        } catch (e) {
+          console.warn('Local storage clear warning:', e);
+        }
+        this.closeResetModal();
+        this.renderTitleScreen();
+        await this.saveProgress(true);
+      }
+
+      updateHeaderPlayerBar() {
+        const nextExp = this.getNextLevelExp(this.playerLevel);
+        const pct = Math.min(100, Math.round((this.playerExp / nextExp) * 100));
+        document.getElementById('hdrPlayerLevel').textContent = this.playerLevel;
+        document.getElementById('hdrExpBar').style.width = `${pct}%`;
+        document.getElementById('hdrExpText').textContent = `${this.playerExp}/${nextExp} EXP`;
+      }
+
+      /**
+       * Generate 10 Monster Species, each evolving across 10 Stages (Lv.1-100)
+       */
+      getMonsterConfig(level) {
+        const SPECIES_LIST = [
+          {
+            id: 'grass',
+            name: 'タネッピ',
+            elementLabel: '🌿 くさ',
+            elementIcon: '🌿',
+            primary: '#4ade80',
+            secondary: '#15803d',
+            accent: '#fef08a',
+            aura: '#86efac',
+            badgeCls: 'bg-emerald-600 text-white',
+            body: 'slime'
+          },
+          {
+            id: 'water',
+            name: 'アワッピー',
+            elementLabel: '💧 みず',
+            elementIcon: '💧',
+            primary: '#38bdf8',
+            secondary: '#0369a1',
+            accent: '#bae6fd',
+            aura: '#7dd3fc',
+            badgeCls: 'bg-sky-600 text-white',
+            body: 'slime'
+          },
+          {
+            id: 'fire',
+            name: 'ヒノッコ',
+            elementLabel: '🔥 ほのお',
+            elementIcon: '🔥',
+            primary: '#fb7185',
+            secondary: '#be123c',
+            accent: '#fde047',
+            aura: '#fdba74',
+            badgeCls: 'bg-rose-600 text-white',
+            body: 'beast'
+          },
+          {
+            id: 'electric',
+            name: 'ピカッチ',
+            elementLabel: '⚡ でんき',
+            elementIcon: '⚡',
+            primary: '#facc15',
+            secondary: '#a16207',
+            accent: '#ffffff',
+            aura: '#fef08a',
+            badgeCls: 'bg-amber-500 text-slate-950',
+            body: 'beast'
+          },
+          {
+            id: 'wind',
+            name: 'ハヤテドリ',
+            elementLabel: '🍃 かぜ',
+            elementIcon: '🍃',
+            primary: '#34d399',
+            secondary: '#0f766e',
+            accent: '#ecfdf5',
+            aura: '#6ee7b7',
+            badgeCls: 'bg-teal-600 text-white',
+            body: 'bird'
+          },
+          {
+            id: 'rock',
+            name: 'イシコロイド',
+            elementLabel: '🪨 いわ',
+            elementIcon: '🪨',
+            primary: '#d97706',
+            secondary: '#78350f',
+            accent: '#fde68a',
+            aura: '#fcd34d',
+            badgeCls: 'bg-amber-800 text-amber-100',
+            body: 'golem'
+          },
+          {
+            id: 'ice',
+            name: 'ユキダルン',
+            elementLabel: '❄️ こおり',
+            elementIcon: '❄️',
+            primary: '#67e8f9',
+            secondary: '#0e7490',
+            accent: '#ffffff',
+            aura: '#cffafe',
+            badgeCls: 'bg-cyan-600 text-white',
+            body: 'slime'
+          },
+          {
+            id: 'dark',
+            name: 'カゲボウズ',
+            elementLabel: '🌙 やみ',
+            elementIcon: '🌙',
+            primary: '#a855f7',
+            secondary: '#4c1d95',
+            accent: '#f472b6',
+            aura: '#c084fc',
+            badgeCls: 'bg-purple-700 text-white',
+            body: 'spirit'
+          },
+          {
+            id: 'light',
+            name: 'キラリン',
+            elementLabel: '✨ ひかり',
+            elementIcon: '✨',
+            primary: '#fde047',
+            secondary: '#ca8a04',
+            accent: '#ffffff',
+            aura: '#fef9c3',
+            badgeCls: 'bg-yellow-400 text-slate-950',
+            body: 'spirit'
+          },
+          {
+            id: 'dragon',
+            name: 'ドラゴキング',
+            elementLabel: '🐉 りゅう',
+            elementIcon: '🐉',
+            primary: '#f97316',
+            secondary: '#7c2d12',
+            accent: '#fef08a',
+            aura: '#fb923c',
+            badgeCls: 'bg-gradient-to-r from-rose-600 via-amber-500 to-indigo-600 text-white',
+            body: 'dragon'
+          }
+        ];
+
+        const clampedLv = Math.max(1, Math.min(MAX_LEVEL, level));
+        const speciesIdx = Math.floor((clampedLv - 1) / 10);
+        const evoStage = ((clampedLv - 1) % 10) + 1;
+        const sp = SPECIES_LIST[speciesIdx];
+
+        const evoShort = evoStage === 10 ? '👑第10段階' : `第${evoStage}段階`;
+        const evoFull = evoStage === 10 ? '👑 第10段階 (MAX)' : `★ 第${evoStage}段階 / 10`;
+
+        const baseHp = Math.min(10, 4 + Math.floor((clampedLv - 1) / 15));
+        const timeLimit = Math.min(75, 45 + Math.floor((clampedLv - 1) / 20) * 5);
+
+        const rx = Number((22 + evoStage * 1.8).toFixed(1));
+        const ry = Number((20 + evoStage * 1.7).toFixed(1));
+        const cy = Number((76 - evoStage * 0.9).toFixed(1));
+        const topY = Number((cy - ry).toFixed(1));
+
+        let auraSvg = '';
+        if (evoStage >= 5) {
+          auraSvg += `<circle cx="60" cy="${cy}" r="${36 + evoStage * 1.4}" fill="${sp.aura}" opacity="${0.08 + evoStage * 0.012}" />`;
+          auraSvg += `<circle cx="60" cy="${cy}" r="${38 + evoStage * 1.5}" fill="none" stroke="${sp.aura}" stroke-width="${evoStage >= 9 ? 2.5 : 1.5}" stroke-dasharray="6 4" opacity="0.65" />`;
+        }
+        if (evoStage >= 8) {
+          auraSvg += `<circle cx="60" cy="${cy}" r="${45 + evoStage * 1.1}" fill="none" stroke="${sp.accent}" stroke-width="1.8" stroke-dasharray="3 5" opacity="0.8" />`;
+        }
+        if (evoStage === 10) {
+          auraSvg += `
+            <polygon points="18,22 20,27 25,27 21,30 22,35 18,32 14,35 15,30 11,27 16,27" fill="#fef08a" opacity="0.9"/>
+            <polygon points="102,22 104,27 109,27 105,30 106,35 102,32 98,35 99,30 95,27 100,27" fill="#fef08a" opacity="0.9"/>
+          `;
+        }
+
+        let backSvg = '';
+        if (sp.body === 'bird' || sp.body === 'dragon' || evoStage >= 7) {
+          if (evoStage >= 3 && evoStage <= 5) {
+            const wingSpan = 14 + evoStage * 2.5;
+            backSvg = `
+              <path d="M${60 - rx + 4} ${cy} Q${60 - rx - wingSpan} ${cy - 18} ${60 - rx + 6} ${cy - 8} Z" fill="${sp.secondary}" stroke="${sp.accent}" stroke-width="1"/>
+              <path d="M${60 + rx - 4} ${cy} Q${60 + rx + wingSpan} ${cy - 18} ${60 + rx - 6} ${cy - 8} Z" fill="${sp.secondary}" stroke="${sp.accent}" stroke-width="1"/>
+            `;
+          } else if (evoStage >= 6) {
+            const wingSpan = 16 + evoStage * 2.4;
+            backSvg = `
+              <path d="M${60 - rx + 5} ${cy} Q${60 - rx - wingSpan} ${cy - 34} ${60 - rx + 8} ${cy - 16} Q${60 - rx - wingSpan * 0.65} ${cy - 6} ${60 - rx + 4} ${cy + 4} Q${60 - rx - wingSpan * 0.4} ${cy + 10} ${60 - rx + 7} ${cy + 13} Z" fill="${sp.secondary}" stroke="${sp.accent}" stroke-width="1.4"/>
+              <path d="M${60 + rx - 5} ${cy} Q${60 + rx + wingSpan} ${cy - 34} ${60 + rx - 8} ${cy - 16} Q${60 + rx + wingSpan * 0.65} ${cy - 6} ${60 + rx - 4} ${cy + 4} Q${60 + rx + wingSpan * 0.4} ${cy + 10} ${60 + rx - 7} ${cy + 13} Z" fill="${sp.secondary}" stroke="${sp.accent}" stroke-width="1.4"/>
+            `;
+          }
+        } else if (sp.body === 'golem') {
+          if (evoStage >= 3) {
+            const padH = 12 + evoStage * 1.6;
+            backSvg = `
+              <rect x="${60 - rx - 7}" y="${cy - 14}" width="11" height="${padH}" rx="4" fill="${sp.secondary}" stroke="${sp.accent}" stroke-width="1.4"/>
+              <rect x="${60 + rx - 4}" y="${cy - 14}" width="11" height="${padH}" rx="4" fill="${sp.secondary}" stroke="${sp.accent}" stroke-width="1.4"/>
+            `;
+          }
+        } else if (sp.body === 'spirit') {
+          if (evoStage >= 2) {
+            const orbR = 2.5 + evoStage * 0.55;
+            backSvg = `
+              <circle cx="${60 - rx - 8}" cy="${cy - 10}" r="${orbR}" fill="${sp.aura}" opacity="0.8"/>
+              <circle cx="${60 + rx + 8}" cy="${cy - 10}" r="${orbR}" fill="${sp.aura}" opacity="0.8"/>
+            `;
+          }
+        }
+
+        let headSvg = '';
+        if (sp.id === 'grass') {
+          if (evoStage <= 3) {
+            const leafScale = 6 + evoStage * 2.5;
+            headSvg = `<path d="M60 ${topY + 2} Q${60 - leafScale} ${topY - leafScale} ${60 - leafScale - 5} ${topY - 4} Q${60 - 4} ${topY} 60 ${topY + 2} Q${60 + leafScale} ${topY - leafScale} ${60 + leafScale + 5} ${topY - 4} Q${60 + 4} ${topY} 60 ${topY + 2}" fill="#86efac" stroke="#15803d" stroke-width="1.2"/>`;
+          } else if (evoStage <= 6) {
+            headSvg = `<polygon points="60,${topY - 10 - evoStage} 50,${topY + 2} 70,${topY + 2}" fill="#f472b6" stroke="#fef08a" stroke-width="1.4"/>`;
+          } else {
+            const flowerR = 7 + (evoStage - 6) * 1.3;
+            headSvg = `
+              <circle cx="60" cy="${topY - 7}" r="${flowerR}" fill="#f43f5e" stroke="#fef08a" stroke-width="1.8"/>
+              <circle cx="60" cy="${topY - 7}" r="${flowerR * 0.42}" fill="#fde047"/>
+            `;
+          }
+        } else if (sp.id === 'water') {
+          const dropH = 8 + evoStage * 1.6;
+          headSvg = `
+            <path d="M60 ${topY - dropH} Q${48 - evoStage * 0.5} ${topY} 60 ${topY + 4} Q${72 + evoStage * 0.5} ${topY} 60 ${topY - dropH} Z" fill="#7dd3fc" stroke="#ffffff" stroke-width="1.2"/>
+          `;
+        } else if (sp.id === 'fire') {
+          const flameH = 6 + evoStage * 1.8;
+          headSvg = `
+            <path d="M48 ${topY + 4} Q53 ${topY - flameH} 60 ${topY - flameH - 5} Q67 ${topY - flameH} 72 ${topY + 4} Z" fill="#fb923c" stroke="#fef08a" stroke-width="1.2"/>
+          `;
+        } else if (sp.id === 'electric') {
+          const earH = 6 + evoStage * 1.6;
+          headSvg = `
+            <polygon points="45,${topY + 6} ${36 - evoStage * 0.6},${topY - earH} 53,${topY + 2}" fill="#fde047" stroke="#a16207" stroke-width="1.2"/>
+            <polygon points="75,${topY + 6} ${84 + evoStage * 0.6},${topY - earH} 67,${topY + 2}" fill="#fde047" stroke="#a16207" stroke-width="1.2"/>
+          `;
+        } else if (sp.id === 'ice') {
+          const spikeH = 6 + evoStage * 1.4;
+          headSvg = `
+            <polygon points="46,${topY + 3} 50,${topY - spikeH + 3} 56,${topY + 1} 60,${topY - spikeH - 3} 64,${topY + 1} 70,${topY - spikeH + 3} 74,${topY + 3}" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.2"/>
+          `;
+        } else if (sp.id === 'light') {
+          headSvg = `
+            <ellipse cx="60" cy="${topY - 8}" rx="${10 + evoStage * 1.3}" ry="3.8" fill="none" stroke="#fef08a" stroke-width="${evoStage >= 7 ? 3 : 2}"/>
+          `;
+        } else if (sp.id === 'dark') {
+          headSvg = `
+            <path d="M54 ${topY - 12 - evoStage * 0.5} A10 10 0 1 0 68 ${topY - 4} A7 7 0 1 1 54 ${topY - 12 - evoStage * 0.5} Z" fill="#f472b6" />
+          `;
+        } else {
+          const hornH = 5 + evoStage * 1.7;
+          headSvg = `
+            <polygon points="45,${topY + 5} ${36 - evoStage * 0.6},${topY - hornH} 53,${topY + 2}" fill="${sp.accent}" stroke="${sp.secondary}" stroke-width="1.2"/>
+            <polygon points="75,${topY + 5} ${84 + evoStage * 0.6},${topY - hornH} 67,${topY + 2}" fill="${sp.accent}" stroke="${sp.secondary}" stroke-width="1.2"/>
+          `;
+        }
+
+        let crestSvg = '';
+        if (evoStage >= 4) {
+          crestSvg += `<polygon points="60,${cy - ry * 0.62} 56,${cy - ry * 0.42} 60,${cy - ry * 0.24} 64,${cy - ry * 0.42}" fill="${sp.accent}" stroke="#0f172a" stroke-width="1"/>`;
+        }
+        if (evoStage >= 8) {
+          const crownScale = evoStage === 10 ? 1.25 : 1.0;
+          crestSvg += `
+            <polygon points="${60 - 13 * crownScale},${topY + 2} ${60 - 9 * crownScale},${topY - 11 * crownScale} 60,${topY - 4 * crownScale} ${60 + 9 * crownScale},${topY - 11 * crownScale} ${60 + 13 * crownScale},${topY + 2}" fill="#fbbf24" stroke="#ffffff" stroke-width="1.3"/>
+          `;
+        }
+
+        let bodySvg = '';
+        if (sp.body === 'golem') {
+          bodySvg = `<rect x="${60 - rx}" y="${cy - ry}" width="${rx * 2}" height="${ry * 2}" rx="${evoStage <= 3 ? 14 : 8}" fill="url(#monGrad_${clampedLv})" stroke="#ffffff" stroke-width="2.2" stroke-opacity="0.45"/>`;
+        } else if (sp.body === 'spirit') {
+          bodySvg = `
+            <path d="M${60 - rx} ${cy + 6} Q${60 - rx} ${cy - ry} 60 ${cy - ry} Q${60 + rx} ${cy - ry} ${60 + rx} ${cy + 6} Q${60 + rx * 0.5} ${cy + ry + 6} 60 ${cy + ry - 2} Q${60 - rx * 0.5} ${cy + ry + 6} ${60 - rx} ${cy + 6} Z" fill="url(#monGrad_${clampedLv})" stroke="#ffffff" stroke-width="2.2" stroke-opacity="0.45"/>
+          `;
+        } else if (sp.body === 'beast' || sp.body === 'dragon') {
+          bodySvg = `
+            <ellipse cx="60" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#monGrad_${clampedLv})" stroke="#ffffff" stroke-width="2.2" stroke-opacity="0.45"/>
+            <ellipse cx="60" cy="${cy + ry * 0.35}" rx="${rx * 0.58}" ry="${ry * 0.45}" fill="${sp.accent}" opacity="0.35"/>
+          `;
+        } else {
+          bodySvg = `
+            <ellipse cx="60" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#monGrad_${clampedLv})" stroke="#ffffff" stroke-width="2.2" stroke-opacity="0.45"/>
+            <ellipse cx="${60 - rx * 0.35}" cy="${cy - ry * 0.42}" rx="${rx * 0.28}" ry="${ry * 0.16}" fill="#ffffff" opacity="0.3" transform="rotate(-20 ${60 - rx * 0.35} ${cy - ry * 0.42})"/>
+          `;
+        }
+
+        const eyeOffsetX = evoStage <= 3 ? 9.5 : 12;
+        const eyeY = cy - 3.5;
+        const eyeR = evoStage <= 3 ? 6 : 5.4;
+        const browSvg = evoStage >= 4
+          ? `<line x1="${60 - eyeOffsetX - 5}" y1="${eyeY - 7}" x2="${60 - eyeOffsetX + 4}" y2="${eyeY - 4}" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+             <line x1="${60 + eyeOffsetX + 5}" y1="${eyeY - 7}" x2="${60 + eyeOffsetX - 4}" y2="${eyeY - 4}" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>`
+          : '';
+
+        const mouthSvg = evoStage <= 3
+          ? `<path d="M53 ${cy + 10} Q60 ${cy + 16} 67 ${cy + 10}" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>`
+          : evoStage <= 7
+            ? `<path d="M51 ${cy + 12} Q60 ${cy + 7} 69 ${cy + 12}" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>`
+            : `<polygon points="49,${cy + 11} 53,${cy + 16} 57,${cy + 11} 63,${cy + 16} 67,${cy + 11} 71,${cy + 11}" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>`;
+
+        const svg = `
+          <svg viewBox="0 0 120 120" class="w-full h-full drop-shadow-lg overflow-visible">
+            <defs>
+              <radialGradient id="monGrad_${clampedLv}" cx="38%" cy="32%" r="68%">
+                <stop offset="0%" stop-color="${sp.primary}" />
+                <stop offset="100%" stop-color="${sp.secondary}" />
+              </radialGradient>
+            </defs>
+            ${auraSvg}
+            ${backSvg}
+            ${headSvg}
+            ${bodySvg}
+            ${crestSvg}
+            <g class="monster-face-normal">
+              <circle cx="${60 - eyeOffsetX}" cy="${eyeY}" r="${eyeR}" fill="#ffffff" />
+              <circle cx="${60 + eyeOffsetX}" cy="${eyeY}" r="${eyeR}" fill="#ffffff" />
+              <circle cx="${60 - eyeOffsetX + 1}" cy="${eyeY}" r="2.8" fill="#0f172a" />
+              <circle cx="${60 + eyeOffsetX - 1}" cy="${eyeY}" r="2.8" fill="#0f172a" />
+              ${browSvg}
+              ${mouthSvg}
+            </g>
+            <g class="monster-face-smirk hidden">
+              <path d="M${60 - eyeOffsetX - 5} ${eyeY + 1} Q${60 - eyeOffsetX} ${eyeY - 6} ${60 - eyeOffsetX + 5} ${eyeY + 1}" fill="none" stroke="#0f172a" stroke-width="2.8" stroke-linecap="round"/>
+              <path d="M${60 + eyeOffsetX - 5} ${eyeY + 1} Q${60 + eyeOffsetX} ${eyeY - 6} ${60 + eyeOffsetX + 5} ${eyeY + 1}" fill="none" stroke="#0f172a" stroke-width="2.8" stroke-linecap="round"/>
+              <ellipse cx="${60 - eyeOffsetX - 3}" cy="${eyeY + 6}" rx="4" ry="2.2" fill="#fb7185" opacity="0.8"/>
+              <ellipse cx="${60 + eyeOffsetX + 3}" cy="${eyeY + 6}" rx="4" ry="2.2" fill="#fb7185" opacity="0.8"/>
+              <path d="M${60 - 1} ${cy + 12} Q${60 + 3} ${cy + 19} ${60 + 6} ${cy + 10}" fill="#f43f5e" />
+              <path d="M${60 - 9} ${cy + 10} Q${60} ${cy + 18} ${60 + 11} ${cy + 7}" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+            </g>
+            <g class="monster-face-mega-taunt hidden">
+              <path d="M${60 - eyeOffsetX - 6} ${eyeY - 3} L${60 - eyeOffsetX + 3} ${eyeY + 1} L${60 - eyeOffsetX - 6} ${eyeY + 5}" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M${60 + eyeOffsetX + 6} ${eyeY - 3} L${60 + eyeOffsetX - 3} ${eyeY + 1} L${60 + eyeOffsetX + 6} ${eyeY + 5}" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <ellipse cx="${60 - eyeOffsetX - 4}" cy="${eyeY + 7}" rx="5" ry="2.8" fill="#f43f5e" opacity="0.9"/>
+              <ellipse cx="${60 + eyeOffsetX + 4}" cy="${eyeY + 7}" rx="5" ry="2.8" fill="#f43f5e" opacity="0.9"/>
+              <path d="M${60 - 12} ${cy + 7} Q${60} ${cy + 24} ${60 + 12} ${cy + 7} Z" fill="#881337" stroke="#0f172a" stroke-width="2.4" stroke-linejoin="round"/>
+              <path d="M${60 - 6} ${cy + 13} Q${60} ${cy + 27} ${60 + 6} ${cy + 13} Z" fill="#fb7185" />
+              <path d="M${60 - rx - 3} ${eyeY - 2} Q${60 - rx - 8} ${eyeY + 3} ${60 - rx - 2} ${eyeY + 5}" fill="#38bdf8" />
+              <path d="M${60 + rx + 3} ${eyeY - 2} Q${60 + rx + 8} ${eyeY + 3} ${60 + rx + 2} ${eyeY + 5}" fill="#38bdf8" />
+            </g>
+          </svg>
+        `;
+
+        return {
+          level: clampedLv,
+          name: sp.name,
+          element: sp.id,
+          elementLabel: sp.elementLabel,
+          elementIcon: sp.elementIcon,
+          elementBadgeCls: sp.badgeCls,
+          evoStage,
+          evoShort,
+          evoFull,
+          baseHp,
+          timeLimit,
+          svg
+        };
+      }
+
+      renderStagePageTabs() {
+        const tabsContainer = document.getElementById('stagePageTabs');
+        tabsContainer.innerHTML = '';
+        for (let p = 0; p < 10; p++) {
+          const startLv = p * 10 + 1;
+          const endLv = (p + 1) * 10;
+          const isActive = p === this.selectedStagePage;
+          const hasUnlocked = this.unlockedLevel >= startLv;
+
+          const btn = document.createElement('button');
+          btn.onclick = () => this.selectStagePage(p);
+          btn.className = `py-1 px-0.5 rounded-lg text-[10px] font-black transition border ${
+            isActive
+              ? 'bg-amber-400 text-slate-950 border-yellow-200 shadow'
+              : hasUnlocked
+                ? 'bg-indigo-950/90 text-indigo-200 border-indigo-400/30 hover:bg-indigo-900'
+                : 'bg-slate-900/60 text-slate-500 border-slate-700/40'
+          }`;
+          btn.textContent = `${startLv}-${endLv}`;
+          tabsContainer.appendChild(btn);
+        }
+      }
+
+      selectStagePage(pageIndex) {
+        this.selectedStagePage = pageIndex;
+        this.renderTitleScreen();
+      }
+
+      renderTitleScreen() {
+        this.updateHeaderPlayerBar();
+
+        document.getElementById('stgPlayerLv').textContent = `Lv.${this.playerLevel}`;
+        document.getElementById('stgClearedCount').textContent = `${this.clearedLevels.length} / ${MAX_LEVEL}`;
+        document.getElementById('stgUnlockedRange').textContent = `Lv.${this.unlockedLevel} まで`;
+
+        this.renderStagePageTabs();
+
+        const grid = document.getElementById('enemyGrid');
+        grid.innerHTML = '';
+
+        const startLv = this.selectedStagePage * 10 + 1;
+        const endLv = Math.min(MAX_LEVEL, startLv + 9);
+
+        for (let lv = startLv; lv <= endLv; lv++) {
+          const mon = this.getMonsterConfig(lv);
+          const isUnlocked = lv <= this.unlockedLevel;
+          const isCleared = this.clearedLevels.includes(lv);
+          // Scale monster preview size slightly across stages 1..10 in the card too
+          const previewSize = Math.round(44 + (mon.evoStage - 1) * 2.8);
+
+          const card = document.createElement('button');
+          card.disabled = !isUnlocked;
+          if (isUnlocked) {
+            card.onclick = () => this.startStage(lv);
+          }
+
+          card.className = `relative rounded-xl p-2 flex flex-col items-center justify-between border transition text-center h-full overflow-hidden ${
+            isUnlocked
+              ? isCleared
+                ? 'bg-emerald-950/85 hover:bg-emerald-900/90 border-emerald-400/50 shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer'
+                : 'bg-indigo-950/90 hover:bg-indigo-900 border-amber-400/60 shadow-lg hover:scale-[1.02] active:scale-95 cursor-pointer'
+              : 'bg-slate-900/65 border-slate-700/40 opacity-60 cursor-not-allowed'
+          }`;
+
+          card.innerHTML = `
+            <div class="w-full flex items-center justify-between text-[10px] font-black px-0.5 shrink-0">
+              <span class="${isUnlocked ? 'text-amber-300' : 'text-slate-400'}">Lv.${lv} ${isUnlocked ? mon.elementIcon : ''}</span>
+              ${
+                isCleared
+                  ? '<span class="text-emerald-300">⭐</span>'
+                  : isUnlocked
+                    ? '<span class="text-rose-300">NEW</span>'
+                    : '<span class="text-slate-400">🔒</span>'
+              }
+            </div>
+            <div class="flex-1 w-full flex items-center justify-center my-0.5 overflow-visible">
+              ${
+                isUnlocked
+                  ? `<div style="width:${previewSize}px;height:${previewSize}px;" class="flex items-center justify-center">${mon.svg}</div>`
+                  : '<div class="text-2xl">🔒</div>'
+              }
+            </div>
+            <div class="w-full shrink-0">
+              <div class="text-xs font-black truncate ${isUnlocked ? 'text-white' : 'text-slate-400'}">
+                ${isUnlocked ? mon.name : '？？？'}
+              </div>
+            </div>
+          `;
+
+          grid.appendChild(card);
+        }
+      }
+
+      showTitleScreen() {
+        this.isPlaying = false;
+        clearInterval(this.timerInterval);
+        this.saveLocalBackup();
+
+        document.getElementById('gameScreen').classList.add('hidden');
+        document.getElementById('resultScreen').classList.add('hidden');
+        document.getElementById('hdrTimerContainer').classList.add('hidden');
+        document.getElementById('comboContainer').classList.add('hidden');
+
+        document.getElementById('titleScreen').classList.remove('hidden');
+        this.selectedStagePage = Math.floor((Math.min(this.unlockedLevel, MAX_LEVEL) - 1) / 10);
+        this.renderTitleScreen();
+      }
+
+      toggleSound() {
+        this.sound.enabled = !this.sound.enabled;
+        const onIcon = document.getElementById('soundOnIcon');
+        const offIcon = document.getElementById('soundOffIcon');
+        if (this.sound.enabled) {
+          onIcon.classList.remove('hidden');
+          offIcon.classList.add('hidden');
+          this.sound.playHit();
+        } else {
+          onIcon.classList.add('hidden');
+          offIcon.classList.remove('hidden');
+        }
+      }
+
+      testMissSound() {
+        this.sound.playMiss();
+      }
+
+      toggleInstructionsModal() {
+        const modal = document.getElementById('instructionsModal');
+        modal.classList.toggle('hidden');
+      }
+
+      buildVirtualKeyboard() {
+        const rows = [
+          ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+          ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', '-'],
+          ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+        ];
+        const container = document.getElementById('virtualKeyboard');
+        container.innerHTML = '';
+
+        rows.forEach((row) => {
+          const rowEl = document.createElement('div');
+          rowEl.className = 'flex gap-1.5 justify-center w-full';
+          row.forEach((ch) => {
+            const keyEl = document.createElement('div');
+            keyEl.id = `vkey_${ch.toLowerCase()}`;
+            keyEl.className = 'w-8 h-7 sm:w-10 sm:h-8 rounded-lg bg-indigo-900/90 border border-indigo-400/40 flex items-center justify-center text-xs sm:text-sm font-black text-indigo-100 shadow transition-all duration-100';
+            keyEl.textContent = ch;
+            rowEl.appendChild(keyEl);
+          });
+          container.appendChild(rowEl);
+        });
+      }
+
+      highlightTargetKey(char) {
+        document.querySelectorAll('.animate-key-target').forEach((el) => {
+          el.classList.remove('animate-key-target');
+        });
+        if (!char) return;
+        const keyEl = document.getElementById(`vkey_${char.toLowerCase()}`);
+        if (keyEl) {
+          keyEl.classList.add('animate-key-target');
+        }
+      }
+
+      getAvailableWordLevels(stageLevel) {
+        if (stageLevel <= 3) return [1];
+        if (stageLevel <= 7) return [1, 2];
+        if (stageLevel <= 10) return [2, 3];
+        if (stageLevel <= 20) return [3, 4, 5];
+        if (stageLevel <= 35) return [4, 5, 6];
+        if (stageLevel <= 50) return [5, 6];
+        if (stageLevel <= 75) return [5, 6, 7];
+        return [6, 7, 8];
+      }
+
+      pickNextWord(stageLevel) {
+        const candidateBanks = this.getAvailableWordLevels(stageLevel);
+        let candidates = [];
+
+        candidateBanks.forEach((bankLv) => {
+          const list = WORD_BANK[bankLv] || [];
+          list.forEach((item) => {
+            if (!this.usedWordsThisPlay.has(item.kanji)) {
+              candidates.push(item);
+            }
+          });
+        });
+
+        if (candidates.length === 0) {
+          Object.values(WORD_BANK).forEach((list) => {
+            list.forEach((item) => {
+              if (!this.usedWordsThisPlay.has(item.kanji)) {
+                candidates.push(item);
+              }
+            });
+          });
+        }
+
+        if (candidates.length === 0) {
+          this.usedWordsThisPlay.clear();
+          candidates = WORD_BANK[candidateBanks[0]] || WORD_BANK[1];
+        }
+
+        const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+        this.usedWordsThisPlay.add(chosen.kanji);
+        return chosen;
+      }
+
+      tokenizeKana(furigana) {
+        const digraphMap = {
+          'きゃ': ['kya'], 'きゅ': ['kyu'], 'きょ': ['kyo'],
+          'しゃ': ['sha', 'sya'], 'しゅ': ['shu', 'syu'], 'しょ': ['sho', 'syo'],
+          'ちゃ': ['cha', 'tya', 'cya'], 'ちゅ': ['chu', 'tyu', 'cyu'], 'ちょ': ['cho', 'tyo', 'cyo'],
+          'にゃ': ['nya'], 'にゅ': ['nyu'], 'にょ': ['nyo'],
+          'ひゃ': ['hya'], 'ひゅ': ['hyu'], 'ひょ': ['hyo'],
+          'みゃ': ['mya'], 'みゅ': ['myu'], 'みょ': ['myo'],
+          'りゃ': ['rya'], 'りゅ': ['ryu'], 'りょ': ['ryo'],
+          'ぎゃ': ['gya'], 'ぎゅ': ['gyu'], 'ぎょ': ['gyo'],
+          'じゃ': ['ja', 'zya', 'jya'], 'じゅ': ['ju', 'zyu', 'jyu'], 'じょ': ['jo', 'zyo', 'jyo'],
+          'びゃ': ['bya'], 'びゅ': ['byu'], 'びょ': ['byo'],
+          'ぴゃ': ['pya'], 'ぴゅ': ['pyu'], 'ぴょ': ['pyo']
+        };
+
+        const singleMap = {
+          'あ': ['a'], 'い': ['i'], 'う': ['u'], 'え': ['e'], 'お': ['o'],
+          'か': ['ka'], 'き': ['ki'], 'く': ['ku'], 'け': ['ke'], 'こ': ['ko'],
+          'さ': ['sa'], 'し': ['shi', 'si'], 'す': ['su'], 'せ': ['se'], 'そ': ['so'],
+          'た': ['ta'], 'ち': ['chi', 'ti'], 'つ': ['tsu', 'tu'], 'て': ['te'], 'と': ['to'],
+          'な': ['na'], 'に': ['ni'], 'ぬ': ['nu'], 'ね': ['ne'], 'の': ['no'],
+          'は': ['ha'], 'ひ': ['hi'], 'ふ': ['fu', 'hu'], 'へ': ['he'], 'ほ': ['ho'],
+          'ま': ['ma'], 'み': ['mi'], 'む': ['mu'], 'め': ['me'], 'も': ['mo'],
+          'や': ['ya'], 'ゆ': ['yu'], 'よ': ['yo'],
+          'ら': ['ra'], 'り': ['ri'], 'る': ['ru'], 'れ': ['re'], 'ろ': ['ro'],
+          'わ': ['wa'], 'を': ['wo'],
+          'が': ['ga'], 'ぎ': ['gi'], 'ぐ': ['gu'], 'げ': ['ge'], 'ご': ['go'],
+          'ざ': ['za'], 'じ': ['ji', 'zi'], 'ず': ['zu'], 'ぜ': ['ze'], 'ぞ': ['zo'],
+          'だ': ['da'], 'ぢ': ['di', 'ji'], 'づ': ['du', 'zu'], 'で': ['de'], 'ど': ['do'],
+          'ば': ['ba'], 'び': ['bi'], 'ぶ': ['bu'], 'べ': ['be'], 'ぼ': ['bo'],
+          'ぱ': ['pa'], 'ぴ': ['pi'], 'ぷ': ['pu'], 'ぺ': ['pe'], 'ぽ': ['po'],
+          'ぁ': ['xa', 'la'], 'ぃ': ['xi', 'li'], 'ぅ': ['xu', 'lu'], 'ぇ': ['xe', 'le'], 'ぉ': ['xo', 'lo'],
+          'ゃ': ['xya', 'lya'], 'ゅ': ['xyu', 'lyu'], 'ょ': ['xyo', 'lyo'],
+          'ー': ['-']
+        };
+
+        const tokens = [];
+        let i = 0;
+
+        while (i < furigana.length) {
+          const ch = furigana[i];
+
+          if (ch === 'ん') {
+            tokens.push({ kana: 'ん', options: ['nn'] });
+            i += 1;
+            continue;
+          }
+
+          if (ch === 'っ') {
+            const nextPair = furigana.slice(i + 1, i + 3);
+            const nextSingle = furigana[i + 1];
+            const nextOpts = digraphMap[nextPair] || singleMap[nextSingle];
+            if (nextOpts && nextOpts.length > 0) {
+              const consonants = Array.from(new Set(nextOpts.map(opt => opt[0])));
+              tokens.push({ kana: 'っ', options: consonants });
+            } else {
+              tokens.push({ kana: 'っ', options: ['xtu', 'ltu'] });
+            }
+            i += 1;
+            continue;
+          }
+
+          const pair = furigana.slice(i, i + 2);
+          if (digraphMap[pair]) {
+            tokens.push({ kana: pair, options: digraphMap[pair] });
+            i += 2;
+            continue;
+          }
+
+          if (singleMap[ch]) {
+            tokens.push({ kana: ch, options: singleMap[ch] });
+          } else {
+            tokens.push({ kana: ch, options: [ch] });
+          }
+          i += 1;
+        }
+
+        return tokens;
+      }
+
+      startStage(level) {
+        this.sound.init();
+
+        const targetLv = Math.max(1, Math.min(MAX_LEVEL, level));
+        this.currentMonster = this.getMonsterConfig(targetLv);
+        this.monsterHp = this.currentMonster.baseHp;
+        this.monsterMaxHp = this.currentMonster.baseHp;
+        this.wordsCompletedCount = 0;
+        this.currentWordMistakes = 0;
+
+        this.timeLeft = this.currentMonster.timeLimit;
+        this.maxTime = this.currentMonster.timeLimit;
+
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.totalKeystrokes = 0;
+        this.correctKeystrokes = 0;
+        this.usedWordsThisPlay = new Set();
+
+        this.isPlaying = true;
+        this.isFinishing = false;
+        this.consecutiveMistakes = 0;
+        this.battleStartTime = Date.now();
+
+        document.getElementById('titleScreen').classList.add('hidden');
+        document.getElementById('resultScreen').classList.add('hidden');
+        document.getElementById('gameScreen').classList.remove('hidden');
+        document.getElementById('hdrTimerContainer').classList.remove('hidden');
+        document.getElementById('comboContainer').classList.add('hidden');
+
+        document.getElementById('monsterName').textContent = this.currentMonster.name;
+        document.getElementById('monsterLevel').textContent = `Lv.${this.currentMonster.level}`;
+        const elBadge = document.getElementById('monsterElementBadge');
+        elBadge.textContent = this.currentMonster.elementLabel;
+        elBadge.className = `px-1.5 py-0.5 rounded font-black ${this.currentMonster.elementBadgeCls}`;
+        document.getElementById('monsterEvoStage').textContent = this.currentMonster.evoFull;
+        document.getElementById('monsterSvgContainer').innerHTML = this.currentMonster.svg;
+        this.applyMonsterEvolutionSize(this.currentMonster.evoStage);
+        document.getElementById('scoreText').textContent = '0';
+        document.getElementById('accuracyText').textContent = '100%';
+        document.getElementById('kpmText').textContent = '0';
+
+        this.updateMonsterHpUi();
+        this.loadNextWord();
+        this.startTimer();
+      }
+
+      startNextLevel() {
+        if (!this.currentMonster) return;
+        const nextLv = Math.min(MAX_LEVEL, this.currentMonster.level + 1);
+        this.startStage(nextLv);
+      }
+
+      retryStage() {
+        if (!this.currentMonster) return;
+        this.startStage(this.currentMonster.level);
+      }
+
+      updateMonsterHpUi() {
+        const pct = Math.max(0, Math.round((this.monsterHp / this.monsterMaxHp) * 100));
+        document.getElementById('monsterHpText').textContent = `${this.monsterHp}/${this.monsterMaxHp}`;
+        document.getElementById('monsterHpBar').style.width = `${pct}%`;
+        document.getElementById('wordProgressText').textContent = `${this.wordsCompletedCount + 1} / ${this.monsterMaxHp}`;
+      }
+
+      loadNextWord() {
+        this.resetMonsterSmirk();
+        this.currentWordObj = this.pickNextWord(this.currentMonster.level);
+        this.currentWordMistakes = 0;
+        this.tokens = this.tokenizeKana(this.currentWordObj.furigana);
+        this.tokenIndex = 0;
+        this.tokenTyped = '';
+
+        const badge = document.getElementById('subjectBadge');
+        badge.textContent = `[${this.currentWordObj.subject}]`;
+        const colorCls = SUBJECT_BADGE_COLORS[this.currentWordObj.subject] || 'bg-indigo-600 text-white';
+        badge.className = `px-2.5 py-0.5 rounded-md font-black text-xs shadow ${colorCls}`;
+
+        const kanjiEl = document.getElementById('wordKanji');
+        const len = this.currentWordObj.kanji.length;
+        if (len >= 12) {
+          kanjiEl.className = 'text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-normal leading-snug drop-shadow-md break-words';
+        } else if (len >= 7) {
+          kanjiEl.className = 'text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-wider leading-tight drop-shadow-md break-words';
+        } else {
+          kanjiEl.className = 'text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-widest leading-tight drop-shadow-md break-words';
+        }
+
+        document.getElementById('wordFurigana').textContent = this.currentWordObj.furigana;
+        kanjiEl.textContent = this.currentWordObj.kanji;
+
+        const hintBanner = document.getElementById('wordHintBanner');
+        if (hintBanner) {
+          if (this.currentWordObj.hint) {
+            hintBanner.textContent = this.currentWordObj.hint;
+            hintBanner.classList.remove('hidden');
+          } else {
+            hintBanner.classList.add('hidden');
+          }
+        }
+
+        this.updateMonsterHpUi();
+        this.renderWordDisplay();
+        // 問題が切り替わった直後にも保存し、ふたを閉じても直前の問題から再開できるようにする
+        this.saveLocalBackup();
+      }
+
+      renderWordDisplay() {
+        let doneStr = '';
+        for (let i = 0; i < this.tokenIndex; i++) {
+          doneStr += this.tokens[i].options[0];
+        }
+        doneStr += this.tokenTyped;
+
+        let currentChar = '';
+        let todoStr = '';
+
+        if (this.tokenIndex < this.tokens.length) {
+          const curTok = this.tokens[this.tokenIndex];
+          const matchedOpt = curTok.options.find(opt => opt.startsWith(this.tokenTyped)) || curTok.options[0];
+          currentChar = matchedOpt[this.tokenTyped.length] || '';
+          todoStr = matchedOpt.slice(this.tokenTyped.length + 1);
+
+          for (let i = this.tokenIndex + 1; i < this.tokens.length; i++) {
+            todoStr += this.tokens[i].options[0];
+          }
+        }
+
+        const totalRomajiLen = doneStr.length + currentChar.length + todoStr.length;
+        const romajiBox = document.getElementById('romajiBox');
+        if (totalRomajiLen >= 34) {
+          romajiBox.className = 'inline-flex flex-wrap items-center justify-center bg-blue-950/95 px-4 py-1 rounded-2xl border-2 border-emerald-400/50 font-mono text-base sm:text-lg font-black tracking-wider shadow-lg max-w-full';
+        } else if (totalRomajiLen >= 22) {
+          romajiBox.className = 'inline-flex flex-wrap items-center justify-center bg-blue-950/95 px-4 py-1 rounded-2xl border-2 border-emerald-400/50 font-mono text-lg sm:text-xl font-black tracking-wider shadow-lg max-w-full';
+        } else {
+          romajiBox.className = 'inline-flex flex-wrap items-center justify-center bg-blue-950/95 px-5 py-1 rounded-2xl border-2 border-emerald-400/50 font-mono text-2xl sm:text-3xl font-black tracking-widest shadow-lg max-w-full';
+        }
+
+        document.getElementById('romajiDone').textContent = doneStr;
+        document.getElementById('romajiCurrent').textContent = currentChar;
+        document.getElementById('romajiTodo').textContent = todoStr;
+
+        this.highlightTargetKey(currentChar);
+      }
+
+      bindEvents() {
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            if (!document.getElementById('instructionsModal').classList.contains('hidden')) {
+              this.toggleInstructionsModal();
+              return;
+            }
+            if (!document.getElementById('resetConfirmModal').classList.contains('hidden')) {
+              this.closeResetModal();
+              return;
+            }
+            const titleHidden = document.getElementById('titleScreen').classList.contains('hidden');
+            if (titleHidden) {
+              e.preventDefault();
+              this.showTitleScreen();
+              return;
+            }
+          }
+
+          const resultHidden = document.getElementById('resultScreen').classList.contains('hidden');
+          if (!this.isPlaying && !resultHidden) {
+            if (e.code === 'Space' || e.key === ' ') {
+              e.preventDefault();
+              if (Date.now() - this.resultShownAt < 650) return;
+
+              const nextBtn = document.getElementById('nextLevelBtn');
+              if (!nextBtn.classList.contains('hidden')) {
+                this.startNextLevel();
+              } else {
+                this.retryStage();
+              }
+            }
+            return;
+          }
+
+          if (!this.isPlaying || this.isFinishing) return;
+          if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+          if (/^[a-zA-Z\-]$/.test(e.key)) {
+            e.preventDefault();
+            this.handleKeyPress(e.key.toLowerCase());
+          }
+        });
+      }
+
+      handleKeyPress(key) {
+        if (!this.isPlaying || this.isFinishing || this.tokenIndex >= this.tokens.length) return;
+
+        this.totalKeystrokes += 1;
+        const curTok = this.tokens[this.tokenIndex];
+        const candidatePrefix = this.tokenTyped + key;
+        const validOptions = curTok.options.filter(opt => opt.startsWith(candidatePrefix));
+
+        if (validOptions.length > 0) {
+          this.consecutiveMistakes = 0;
+          this.correctKeystrokes += 1;
+          this.tokenTyped = candidatePrefix;
+          this.combo += 1;
+          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+
+          const keyPts = 10 + Math.min(20, Math.floor(this.combo / 3) * 2);
+          this.score += keyPts;
+          document.getElementById('scoreText').textContent = this.score;
+
+          if (this.combo >= 3) {
+            const comboEl = document.getElementById('comboContainer');
+            comboEl.classList.remove('hidden');
+            document.getElementById('comboText').textContent = this.combo;
+          }
+
+          this.sound.playHit();
+
+          if (validOptions.includes(this.tokenTyped)) {
+            this.tokenIndex += 1;
+            this.tokenTyped = '';
+          }
+
+          this.updateLiveStats();
+
+          if (this.tokenIndex >= this.tokens.length) {
+            this.onWordCompleted();
+          } else {
+            this.spawnMiniShot(keyPts);
+            this.renderWordDisplay();
+          }
+        } else {
+          this.currentWordMistakes += 1;
+          this.consecutiveMistakes += 1;
+          this.combo = 0;
+          document.getElementById('comboContainer').classList.add('hidden');
+
+          this.sound.playMiss();
+          if (this.consecutiveMistakes >= 2) {
+            setTimeout(() => {
+              if (this.isPlaying && this.consecutiveMistakes >= 2) {
+                this.sound.playMonsterTaunt(this.consecutiveMistakes);
+              }
+            }, 160);
+          }
+
+          const romajiBox = document.getElementById('romajiBox');
+          romajiBox.classList.remove('animate-shake');
+          void romajiBox.offsetWidth;
+          romajiBox.classList.add('animate-shake');
+
+          this.timeLeft = Math.max(1, this.timeLeft - 1);
+          this.updateTimerUi();
+          this.updateLiveStats();
+          this.spawnFloatingText(
+            this.consecutiveMistakes >= 3 ? `-1s ${this.consecutiveMistakes}連続MISS!!` : '-1s MISS!',
+            'text-rose-400'
+          );
+          this.triggerMonsterSmirk(this.consecutiveMistakes);
+        }
+        this.saveLocalBackup();
+      }
+
+      onWordCompleted() {
+        this.resetMonsterSmirk();
+        this.wordsCompletedCount += 1;
+        this.monsterHp = Math.max(0, this.monsterHp - 1);
+
+        const isCritical = this.currentWordMistakes === 0 && this.combo >= 5;
+        const wordLenBonus = this.currentWordObj.furigana.length * 18;
+        const comboBonusDmg = this.combo * 6;
+        const damageValue = Math.round((80 + wordLenBonus + comboBonusDmg) * (isCritical ? 1.5 : 1));
+        const isFinish = this.monsterHp <= 0;
+
+        if (!isFinish && this.currentWordMistakes === 0 && this.monsterMaxHp < 15 && this.wordsCompletedCount >= 2) {
+          this.monsterMaxHp += 1;
+          this.monsterHp += 1;
+          this.spawnFloatingText('連続ノーミス! 問題数UP!', 'text-cyan-300');
+        }
+
+        this.triggerMonsterBigAttack(damageValue, isCritical, isFinish);
+        this.sound.playAttackSlash(isCritical, isFinish);
+        this.sound.playWordClear();
+
+        this.updateMonsterHpUi();
+
+        if (isFinish) {
+          this.isFinishing = true;
+          clearInterval(this.timerInterval);
+          this.highlightTargetKey(null);
+          setTimeout(() => {
+            this.isFinishing = false;
+            this.endBattle(true);
+          }, 550);
+        } else {
+          this.loadNextWord();
+        }
+      }
+
+      triggerMonsterSmirk(streak = 1) {
+        const isMega = streak >= 3;
+        const isMedium = streak === 2;
+
+        const svgContainer = document.getElementById('monsterSvgContainer');
+        if (svgContainer) {
+          const normalFace = svgContainer.querySelector('.monster-face-normal');
+          const smirkFace = svgContainer.querySelector('.monster-face-smirk');
+          const megaFace = svgContainer.querySelector('.monster-face-mega-taunt');
+          if (normalFace) normalFace.classList.add('hidden');
+          if (isMega) {
+            if (smirkFace) smirkFace.classList.add('hidden');
+            if (megaFace) megaFace.classList.remove('hidden');
+          } else {
+            if (megaFace) megaFace.classList.add('hidden');
+            if (smirkFace) smirkFace.classList.remove('hidden');
+          }
+        }
+
+        const wrapper = document.getElementById('monsterAvatarWrapper');
+        if (wrapper) {
+          wrapper.classList.remove(
+            'animate-monster-mini-hit',
+            'animate-monster-big-damage',
+            'animate-monster-smirk',
+            'animate-monster-taunt-medium',
+            'animate-monster-taunt-mega'
+          );
+          void wrapper.offsetWidth;
+          if (isMega) {
+            wrapper.classList.add('animate-monster-taunt-mega');
+          } else if (isMedium) {
+            wrapper.classList.add('animate-monster-taunt-medium');
+          } else {
+            wrapper.classList.add('animate-monster-smirk');
+          }
+        }
+
+        const stageCard = document.getElementById('monsterStageCard');
+        if (stageCard && streak >= 2) {
+          stageCard.classList.add('ring-4', isMega ? 'ring-fuchsia-400' : 'ring-pink-400/70');
+        }
+
+        const flashEl = document.getElementById('monsterDamageFlash');
+        if (flashEl) {
+          flashEl.className = isMega
+            ? 'absolute inset-0 bg-fuchsia-500/45 pointer-events-none z-20 transition-colors duration-150'
+            : isMedium
+              ? 'absolute inset-0 bg-pink-500/35 pointer-events-none z-20 transition-colors duration-150'
+              : 'absolute inset-0 bg-fuchsia-500/25 pointer-events-none z-20 transition-colors duration-150';
+          setTimeout(() => {
+            flashEl.className = 'absolute inset-0 bg-rose-500/0 pointer-events-none z-20 transition-colors duration-150';
+          }, isMega ? 360 : 220);
+        }
+
+        const monFx = document.getElementById('monsterFxLayer');
+        if (monFx) {
+          if (streak >= 2) {
+            const ring = document.createElement('div');
+            ring.style.left = '50%';
+            ring.style.top = '52%';
+            ring.className = `animate-shockwave absolute w-24 h-24 rounded-full border-4 ${
+              isMega ? 'border-fuchsia-300 shadow-[0_0_24px_#e879f9]' : 'border-pink-300'
+            }`;
+            monFx.appendChild(ring);
+            setTimeout(() => ring.remove(), 520);
+          }
+
+          const phrases1 = ['ニヤリ😏', 'ケケケ！♪', 'ラッキー♪', 'やったね！', 'チャンス♪'];
+          const phrases2 = ['おやおや〜？😜', 'あわてすぎ〜！♪', 'どうしたの〜？😏', 'ププッ！余裕〜♪'];
+          const phrasesMega = [
+            'プププーッ！大チャンス！🤣',
+            'あっかんべーだ！😝',
+            'YATTAー！余裕すぎ〜！🎉',
+            'ニヤニヤが止まらない！😈'
+          ];
+
+          const pool = isMega ? phrasesMega : isMedium ? phrases2 : phrases1;
+          const phrase = pool[Math.floor(Math.random() * pool.length)];
+
+          const bubble = document.createElement('div');
+          bubble.style.left = '50%';
+          bubble.style.top = isMega ? '22%' : '26%';
+          if (isMega) {
+            bubble.className = 'animate-mega-bubble absolute px-3 py-1 rounded-2xl bg-gradient-to-r from-fuchsia-700 via-pink-600 to-amber-500 border-2 border-yellow-200 text-white font-black text-xs sm:text-sm whitespace-nowrap shadow-[0_0_18px_rgba(232,121,249,0.9)] z-40 text-center';
+            bubble.innerHTML = `<div class="text-[9px] text-yellow-200 leading-none mb-0.5">🔥 ${streak}連続ミス！大喜び！</div><div>${phrase}</div>`;
+          } else if (isMedium) {
+            bubble.className = 'animate-mega-bubble absolute px-2.5 py-1 rounded-xl bg-fuchsia-900/95 border-2 border-pink-300 text-pink-100 font-black text-xs whitespace-nowrap shadow-lg z-40 text-center';
+            bubble.innerHTML = `<div class="text-[9px] text-amber-300 leading-none mb-0.5">${streak}連続ミス！</div><div>${phrase}</div>`;
+          } else {
+            bubble.className = 'animate-smirk-bubble absolute px-2.5 py-0.5 rounded-full bg-fuchsia-950/90 border border-pink-400/70 text-pink-200 font-black text-xs whitespace-nowrap shadow-lg z-40';
+            bubble.textContent = phrase;
+          }
+          monFx.appendChild(bubble);
+          setTimeout(() => bubble.remove(), isMega ? 1220 : 860);
+
+          const particles = isMega
+            ? ['🤣', '😝', '🎉', '♪', '♫', '✨', '😈']
+            : isMedium
+              ? ['😜', '♪', '♫', '✨', '🎉']
+              : ['♪', '♫', '✨'];
+
+          particles.forEach((sym, idx) => {
+            const noteEl = document.createElement('div');
+            const spread = (idx - (particles.length - 1) / 2);
+            const startX = 50 + spread * (isMega ? 11 : 16);
+            const dx = spread * (isMega ? 22 : 16);
+            const dy = isMega ? -38 - Math.abs(spread) * 6 : -26;
+            noteEl.style.left = `${Math.max(12, Math.min(88, startX))}%`;
+            noteEl.style.top = '42%';
+            noteEl.style.transition = `transform ${isMega ? 0.9 : 0.65}s ease-out, opacity ${isMega ? 0.9 : 0.65}s ease-out`;
+            noteEl.className = `absolute font-black ${isMega ? 'text-base sm:text-lg' : 'text-sm'} text-pink-200 drop-shadow pointer-events-none`;
+            noteEl.textContent = sym;
+            monFx.appendChild(noteEl);
+            requestAnimationFrame(() => {
+              noteEl.style.transform = `translate(${dx}px, ${dy}px) scale(${isMega ? 1.35 : 1.15})`;
+              noteEl.style.opacity = '0';
+            });
+            setTimeout(() => noteEl.remove(), isMega ? 920 : 680);
+          });
+        }
+
+        clearTimeout(this.smirkTimeout);
+        this.smirkTimeout = setTimeout(() => {
+          this.resetMonsterSmirk();
+        }, isMega ? 1300 : isMedium ? 1050 : 850);
+      }
+
+      resetMonsterSmirk() {
+        clearTimeout(this.smirkTimeout);
+        const stageCard = document.getElementById('monsterStageCard');
+        if (stageCard) {
+          stageCard.classList.remove('ring-4', 'ring-fuchsia-400', 'ring-pink-400/70');
+        }
+        const svgContainer = document.getElementById('monsterSvgContainer');
+        if (svgContainer) {
+          const normalFace = svgContainer.querySelector('.monster-face-normal');
+          const smirkFace = svgContainer.querySelector('.monster-face-smirk');
+          const megaFace = svgContainer.querySelector('.monster-face-mega-taunt');
+          if (normalFace) normalFace.classList.remove('hidden');
+          if (smirkFace) smirkFace.classList.add('hidden');
+          if (megaFace) megaFace.classList.add('hidden');
+        }
+      }
+
+      triggerMonsterBigAttack(damageValue, isCritical, isFinish) {
+        const wrapper = document.getElementById('monsterAvatarWrapper');
+        wrapper.classList.remove('animate-monster-mini-hit', 'animate-monster-big-damage');
+        void wrapper.offsetWidth;
+        wrapper.classList.add('animate-monster-big-damage');
+
+        const gameScreen = document.getElementById('gameScreen');
+        gameScreen.classList.remove('animate-screen-shake');
+        void gameScreen.offsetWidth;
+        gameScreen.classList.add('animate-screen-shake');
+
+        const flashEl = document.getElementById('monsterDamageFlash');
+        if (flashEl) {
+          flashEl.className = isFinish
+            ? 'absolute inset-0 bg-amber-400/45 pointer-events-none z-20 transition-colors duration-150'
+            : isCritical
+              ? 'absolute inset-0 bg-yellow-400/35 pointer-events-none z-20 transition-colors duration-150'
+              : 'absolute inset-0 bg-rose-500/35 pointer-events-none z-20 transition-colors duration-150';
+          setTimeout(() => {
+            flashEl.className = 'absolute inset-0 bg-rose-500/0 pointer-events-none z-20 transition-colors duration-150';
+          }, 160);
+        }
+
+        const monFx = document.getElementById('monsterFxLayer');
+        if (!monFx) return;
+
+        const ring = document.createElement('div');
+        ring.style.left = '50%';
+        ring.style.top = '50%';
+        ring.className = `animate-shockwave absolute w-24 h-24 rounded-full border-4 ${
+          isFinish ? 'border-amber-300 shadow-[0_0_24px_#fbbf24]' : isCritical ? 'border-yellow-300' : 'border-rose-400'
+        }`;
+        monFx.appendChild(ring);
+        setTimeout(() => ring.remove(), 500);
+
+        const slashDiv = document.createElement('div');
+        slashDiv.className = 'animate-slash absolute inset-0 flex items-center justify-center';
+        const strokeColor = isFinish ? '#fde047' : isCritical ? '#fbbf24' : '#ffffff';
+        const glowColor = isFinish ? '#f97316' : isCritical ? '#f59e0b' : '#ef4444';
+        slashDiv.innerHTML = `
+          <svg viewBox="0 0 120 120" class="w-full h-full" style="filter: drop-shadow(0 0 8px ${glowColor});">
+            <path d="M18 98 Q60 55 104 16 Q66 64 26 104 Z" fill="${strokeColor}" />
+            ${(isCritical || isFinish) ? `<path d="M18 20 Q62 58 102 100 Q56 64 14 26 Z" fill="${strokeColor}" />` : ''}
+          </svg>
+        `;
+        monFx.appendChild(slashDiv);
+        setTimeout(() => slashDiv.remove(), 450);
+
+        const particleCount = isFinish ? 14 : isCritical ? 10 : 7;
+        for (let i = 0; i < particleCount; i++) {
+          const p = document.createElement('div');
+          const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.4;
+          const dist = 42 + Math.random() * 36;
+          const dx = Math.cos(angle) * dist;
+          const dy = Math.sin(angle) * dist;
+          p.style.left = '50%';
+          p.style.top = '50%';
+          p.style.transition = 'transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.42s ease-out';
+          p.className = `absolute w-2.5 h-2.5 rounded-full ${
+            i % 2 === 0 ? 'bg-yellow-300 shadow-[0_0_8px_#fde047]' : 'bg-rose-400 shadow-[0_0_8px_#fb7185]'
+          }`;
+          monFx.appendChild(p);
+          requestAnimationFrame(() => {
+            p.style.transform = `translate(${dx}px, ${dy}px) scale(0.2)`;
+            p.style.opacity = '0';
+          });
+          setTimeout(() => p.remove(), 450);
+        }
+
+        const dmgPopup = document.createElement('div');
+        dmgPopup.style.left = '50%';
+        dmgPopup.style.top = '36%';
+        dmgPopup.className = 'animate-damage-burst absolute text-center whitespace-nowrap z-40';
+        if (isFinish) {
+          dmgPopup.innerHTML = `
+            <div class="text-[11px] font-black text-amber-200 tracking-wider drop-shadow">FINISH!!</div>
+            <div class="text-2xl sm:text-3xl font-black text-yellow-300 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">-${damageValue}!</div>
+          `;
+        } else if (isCritical) {
+          dmgPopup.innerHTML = `
+            <div class="text-[10px] font-black text-yellow-200 tracking-wider drop-shadow">CRITICAL!!</div>
+            <div class="text-xl sm:text-2xl font-black text-amber-300 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">-${damageValue}!</div>
+          `;
+        } else {
+          dmgPopup.innerHTML = `
+            <div class="text-xl sm:text-2xl font-black text-rose-300 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">-${damageValue}!</div>
+          `;
+        }
+        monFx.appendChild(dmgPopup);
+        setTimeout(() => dmgPopup.remove(), 880);
+      }
+
+      spawnMiniShot(pts = 10) {
+        this.resetMonsterSmirk();
+
+        const effectLayer = document.getElementById('effectLayer');
+        if (effectLayer) {
+          const orb = document.createElement('div');
+          orb.style.left = '56%';
+          orb.style.top = '48%';
+          orb.className = 'animate-energy-orb absolute w-4 h-4 rounded-full bg-gradient-to-r from-amber-300 via-yellow-200 to-cyan-300 shadow-[0_0_14px_#fbbf24] pointer-events-none';
+          effectLayer.appendChild(orb);
+          setTimeout(() => orb.remove(), 240);
+        }
+
+        const wrapper = document.getElementById('monsterAvatarWrapper');
+        if (wrapper) {
+          wrapper.classList.remove('animate-monster-mini-hit');
+          void wrapper.offsetWidth;
+          wrapper.classList.add('animate-monster-mini-hit');
+        }
+
+        const monFx = document.getElementById('monsterFxLayer');
+        if (monFx) {
+          const miniDmg = document.createElement('div');
+          const offsetX = 42 + Math.floor(Math.random() * 16);
+          const offsetY = 42 + Math.floor(Math.random() * 14);
+          miniDmg.style.left = `${offsetX}%`;
+          miniDmg.style.top = `${offsetY}%`;
+          miniDmg.className = 'damage-pop absolute -translate-x-1/2 font-black text-sm sm:text-base text-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] pointer-events-none';
+          miniDmg.textContent = `-${pts}`;
+          monFx.appendChild(miniDmg);
+          setTimeout(() => miniDmg.remove(), 750);
+        }
+      }
+
+      updateLiveStats() {
+        const acc = this.totalKeystrokes > 0
+          ? Math.round((this.correctKeystrokes / this.totalKeystrokes) * 100)
+          : 100;
+        document.getElementById('accuracyText').textContent = `${acc}%`;
+
+        const elapsedMin = Math.max(0.05, (Date.now() - this.battleStartTime) / 60000);
+        const kpm = Math.round(this.correctKeystrokes / elapsedMin);
+        document.getElementById('kpmText').textContent = kpm;
+      }
+
+      updateTimerUi() {
+        const pct = Math.max(0, Math.round((this.timeLeft / this.maxTime) * 100));
+        document.getElementById('timerBar').style.width = `${pct}%`;
+        document.getElementById('timerText').textContent = `${this.timeLeft}s`;
+      }
+
+      startTimer() {
+        clearInterval(this.timerInterval);
+        this.updateTimerUi();
+
+        this.timerInterval = setInterval(() => {
+          if (!this.isPlaying) return;
+          this.timeLeft -= 1;
+          this.updateTimerUi();
+          this.saveLocalBackup();
+
+          if (this.timeLeft <= 0) {
+            this.endBattle(false);
+          }
+        }, 1000);
+      }
+
+      spawnFloatingText(text, colorClass) {
+        const layer = document.getElementById('effectLayer');
+        const el = document.createElement('div');
+        el.className = `damage-pop absolute left-[64%] top-[30%] -translate-x-1/2 font-black text-lg sm:text-xl drop-shadow-lg ${colorClass}`;
+        el.textContent = text;
+        layer.appendChild(el);
+        setTimeout(() => el.remove(), 800);
+      }
+
+      endBattle(isVictory) {
+        this.isPlaying = false;
+        this.saveLocalBackup();
+        this.resultShownAt = Date.now();
+        clearInterval(this.timerInterval);
+        this.highlightTargetKey(null);
+
+        if (isVictory) {
+          this.sound.playDefeat();
+        } else {
+          this.sound.playMiss();
+        }
+
+        const acc = this.totalKeystrokes > 0
+          ? Math.round((this.correctKeystrokes / this.totalKeystrokes) * 100)
+          : 100;
+        const elapsedMin = Math.max(0.05, (Date.now() - this.battleStartTime) / 60000);
+        const kpm = Math.round(this.correctKeystrokes / elapsedMin);
+
+        const baseScore = this.score;
+        const accuracyBonus = Math.round(acc * 3);
+        const speedBonus = Math.round(kpm * 1.5);
+        const comboBonus = this.maxCombo * 12;
+        const totalFinalScore = baseScore + accuracyBonus + speedBonus + comboBonus;
+
+        const expGained = isVictory
+          ? 60 + this.currentMonster.level * 12 + Math.floor(totalFinalScore / 25)
+          : 20 + Math.floor(this.wordsCompletedCount * 8);
+
+        const prevPlayerLevel = this.playerLevel;
+        this.playerExp += expGained;
+        while (this.playerLevel < MAX_LEVEL && this.playerExp >= this.getNextLevelExp(this.playerLevel)) {
+          this.playerExp -= this.getNextLevelExp(this.playerLevel);
+          this.playerLevel += 1;
+        }
+        const leveledUp = this.playerLevel > prevPlayerLevel;
+
+        if (isVictory) {
+          const lv = this.currentMonster.level;
+          if (!this.clearedLevels.includes(lv)) {
+            this.clearedLevels.push(lv);
+            this.clearedLevels.sort((a, b) => a - b);
+          }
+          if (lv >= this.unlockedLevel && lv < MAX_LEVEL) {
+            this.unlockedLevel = lv + 1;
+          }
+        }
+
+        this.updateHeaderPlayerBar();
+        this.saveProgress();
+
+        document.getElementById('gameScreen').classList.add('hidden');
+        document.getElementById('hdrTimerContainer').classList.add('hidden');
+        document.getElementById('comboContainer').classList.add('hidden');
+        document.getElementById('resultScreen').classList.remove('hidden');
+
+        const outcomeEl = document.getElementById('resOutcomeHeader');
+        const nextBtn = document.getElementById('nextLevelBtn');
+        const nextSpaceHint = document.getElementById('nextLevelSpaceHint');
+        const retrySpaceHint = document.getElementById('retrySpaceHint');
+
+        if (isVictory) {
+          outcomeEl.textContent = '🎉 ステージクリア！';
+          outcomeEl.className = 'text-amber-400 font-black text-xl sm:text-2xl tracking-wide flex items-center gap-1.5';
+          if (this.currentMonster.level < MAX_LEVEL) {
+            nextBtn.classList.remove('hidden');
+            nextSpaceHint.classList.remove('hidden');
+            retrySpaceHint.classList.add('hidden');
+          } else {
+            nextBtn.classList.add('hidden');
+            retrySpaceHint.classList.remove('hidden');
+          }
+        } else {
+          outcomeEl.textContent = '⏰ タイムアップ！';
+          outcomeEl.className = 'text-rose-400 font-black text-xl sm:text-2xl tracking-wide flex items-center gap-1.5';
+          nextBtn.classList.add('hidden');
+          retrySpaceHint.classList.remove('hidden');
+        }
+
+        let rankLabel = '🌱 タイピング見習い';
+        if (acc >= 98 && kpm >= 180) rankLabel = '👑 タイピングマスター';
+        else if (acc >= 93 && kpm >= 120) rankLabel = '⚔️ エースタイパー';
+        else if (acc >= 85) rankLabel = '🛡️ しっかりチャレンジャー';
+        document.getElementById('rankTitle').textContent = rankLabel;
+
+        document.getElementById('resExpGained').textContent = `+${expGained} EXP`;
+        const lvUpBox = document.getElementById('levelUpBox');
+        if (leveledUp) {
+          document.getElementById('resNewLevel').textContent = this.playerLevel;
+          lvUpBox.classList.remove('hidden');
+        } else {
+          lvUpBox.classList.add('hidden');
+        }
+
+        document.getElementById('resBaseScore').textContent = `${baseScore} 点`;
+        document.getElementById('resAccuracy').textContent = `${acc}%`;
+        document.getElementById('resBonusAccuracy').textContent = `+${accuracyBonus} 点`;
+        document.getElementById('resKpm').textContent = `${kpm}`;
+        document.getElementById('resBonusSpeed').textContent = `+${speedBonus} 点`;
+        document.getElementById('resMaxCombo').textContent = `${this.maxCombo}`;
+        document.getElementById('resBonusCombo').textContent = `+${comboBonus} 点`;
+        document.getElementById('resScore').textContent = `${baseScore} 点`;
+
+        const rowAcc = document.getElementById('bonusRowAccuracy');
+        const rowSpd = document.getElementById('bonusRowSpeed');
+        const rowCmb = document.getElementById('bonusRowCombo');
+
+        rowAcc.classList.add('opacity-0');
+        rowSpd.classList.add('opacity-0');
+        rowCmb.classList.add('opacity-0');
+
+        setTimeout(() => {
+          rowAcc.classList.remove('opacity-0');
+          document.getElementById('resScore').textContent = `${baseScore + accuracyBonus} 点`;
+          this.sound.playBonusTick(580);
+        }, 450);
+
+        setTimeout(() => {
+          rowSpd.classList.remove('opacity-0');
+          document.getElementById('resScore').textContent = `${baseScore + accuracyBonus + speedBonus} 点`;
+          this.sound.playBonusTick(720);
+        }, 950);
+
+        setTimeout(() => {
+          rowCmb.classList.remove('opacity-0');
+          const totalEl = document.getElementById('resScore');
+          totalEl.textContent = `${totalFinalScore} 点`;
+          totalEl.classList.add('scale-110');
+          setTimeout(() => totalEl.classList.remove('scale-110'), 250);
+          this.sound.playBonusTick(880);
+        }, 1450);
+      }
+    }
+
+    function initGame() {
+      if (!window.game) {
+        window.game = new TypingMonsterGame();
+
+        const saveLocalProgress = () => {
+          try {
+            if (window.game) window.game.saveLocalBackup();
+          } catch (e) {
+            console.warn('Exit backup warning:', e);
+          }
+        };
+        window.addEventListener('pagehide', saveLocalProgress);
+        window.addEventListener('beforeunload', saveLocalProgress);
+        // Chrome/Chromebook がタブを freeze / resume するときにも保存する
+        window.addEventListener('freeze', saveLocalProgress);
+        window.addEventListener('pageshow', saveLocalProgress);
+        window.addEventListener('resume', saveLocalProgress);
+        // お気に入りから開き直した直後や別タブから戻った時にも保存する
+        window.addEventListener('focus', saveLocalProgress);
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'hidden') {
+            saveLocalProgress();
+          } else {
+            // 画面に戻ったときにも最新状態をバックアップ
+            saveLocalProgress();
+          }
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initGame);
+    } else {
+      initGame();
+    }
+  </script>
+</body>
+</html>
